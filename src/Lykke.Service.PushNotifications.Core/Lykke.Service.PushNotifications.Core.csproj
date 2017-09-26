@@ -9,11 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="1.1.97" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Domain\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
