@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Lykke.Service.PushNotifications.Services</AssemblyName>
+    <RootNamespace>Lykke.Service.PushNotifications.Services</RootNamespace>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="2.16.3" />
+    <PackageReference Include="Flurl.Http" Version="1.2.0" />
+    <PackageReference Include="Lykke.Common" Version="1.1.97" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lykke.Service.PushNotifications.Core\Lykke.Service.PushNotifications.Core.csproj" />
+  </ItemGroup>
+
+</Project>
