@@ -11,26 +11,25 @@ namespace Lykke.Service.PushNotifications.AutorestClient.Models
     using System.Collections.Generic;
     using System.Linq;
 
-    public partial class IsAliveResponse
+    public partial class AssetsCreditedModel
     {
         /// <summary>
-        /// Initializes a new instance of the IsAliveResponse class.
+        /// Initializes a new instance of the AssetsCreditedModel class.
         /// </summary>
-        public IsAliveResponse()
+        public AssetsCreditedModel()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the IsAliveResponse class.
+        /// Initializes a new instance of the AssetsCreditedModel class.
         /// </summary>
-        public IsAliveResponse(bool isDebug, string name = default(string), string version = default(string), string env = default(string), IList<IssueIndicator> issueIndicators = default(IList<IssueIndicator>))
+        public AssetsCreditedModel(double amount, IList<string> notificationIds = default(IList<string>), string assetId = default(string), string message = default(string))
         {
-            Name = name;
-            Version = version;
-            Env = env;
-            IsDebug = isDebug;
-            IssueIndicators = issueIndicators;
+            NotificationIds = notificationIds;
+            Amount = amount;
+            AssetId = assetId;
+            Message = message;
             CustomInit();
         }
 
@@ -41,28 +40,23 @@ namespace Lykke.Service.PushNotifications.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+        [JsonProperty(PropertyName = "NotificationIds")]
+        public IList<string> NotificationIds { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Version")]
-        public string Version { get; set; }
+        [JsonProperty(PropertyName = "Amount")]
+        public double Amount { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Env")]
-        public string Env { get; set; }
+        [JsonProperty(PropertyName = "AssetId")]
+        public string AssetId { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "IsDebug")]
-        public bool IsDebug { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "IssueIndicators")]
-        public IList<IssueIndicator> IssueIndicators { get; set; }
+        [JsonProperty(PropertyName = "Message")]
+        public string Message { get; set; }
 
         /// <summary>
         /// Validate the object.

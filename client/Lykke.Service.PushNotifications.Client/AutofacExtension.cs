@@ -14,7 +14,7 @@ namespace Lykke.Service.PushNotifications.Client
             if (string.IsNullOrWhiteSpace(serviceUrl))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(serviceUrl));
 
-            builder.RegisterInstance(new PushNotificationsClient(serviceUrl, log)).As<IPushNotificationsClient>().SingleInstance();
+            builder.RegisterInstance(new PushNotificationsClient(serviceUrl)).As<IPushNotificationsClient>().SingleInstance();
         }
     }
 }
