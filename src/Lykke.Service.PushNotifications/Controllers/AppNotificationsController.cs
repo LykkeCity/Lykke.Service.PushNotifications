@@ -87,5 +87,56 @@ namespace Lykke.Service.PushNotifications.Controllers
 
             return Ok();
         }
+
+        [HttpPost("SendAssetsCreditedNotification")]
+        [SwaggerOperation("SendAssetsCreditedNotification")]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SendAssetsCreditedNotificationAsync([FromBody] AssetsCreditedModel model)
+        {
+            try
+            {
+                await _appNotifications.SendAssetsCreditedNotification(model.NotificationIds.ToArray(), model.Amount,
+                    model.AssetId, model.Message);
+            }
+            catch (Exception e)
+            {
+                await _log.WriteErrorAsync(GetType().Name, "SendAssetsCreditedNotificationAsync", model.ToJson(), e,
+                    DateTime.UtcNow);
+                return BadRequest(ErrorResponse.Create(e.Message));
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("SendRawNotification")]
+        [SwaggerOperation("SendRawNotification")]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SendRawNotificationAsync([FromBody] RawNotificationModel model)
+        {
+            try
+            {
+                switch (model.MobileOs)
+                {
+                    case MobileOs.Ios:
+                        await _appNotifications.SendRawIosNotification(model.NotificationId, model.Payload);
+                        break;
+                    case MobileOs.Android:
+                        await _appNotifications.SendRawAndroidNotification(model.NotificationId, model.Payload);
+                        break;
+                    default:
+                        throw new Exception("Unsupported OS type");
+                }
+            }
+            catch (Exception e)
+            {
+                await _log.WriteErrorAsync(GetType().Name, "SendRawNotificationAsync", model.ToJson(), e,
+                    DateTime.UtcNow);
+                return BadRequest(ErrorResponse.Create(e.Message));
+            }
+
+            return Ok();
+        }
     }
 }
