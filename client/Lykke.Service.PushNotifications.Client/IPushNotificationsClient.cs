@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Lykke.Service.PushNotifications.AutorestClient.Models;
+using Lykke.Service.PushNotifications.Client.AutorestClient.Models;
 
 namespace Lykke.Service.PushNotifications.Client
 {
