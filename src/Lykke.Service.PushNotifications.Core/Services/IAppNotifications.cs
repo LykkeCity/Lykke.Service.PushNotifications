@@ -16,13 +16,14 @@ namespace Lykke.Service.PushNotifications.Core.Services
         EthNeedTransactionSign,
         PositionOpened,
         PositionClosed,
-        MarginCall,
+        MarginCall,        
         OffchainRequest,
         NeedTransactionSign,
         PushTxDialog,        
         LimitOrderEvent,
         LiveAvailable,
-        ClientDialog
+        ClientDialog,
+        OperationCreated,
     }
 
     public static class EventsAndEntities
@@ -43,6 +44,9 @@ namespace Lykke.Service.PushNotifications.Core.Services
         public const string MarginCall = "MarginCall";
         public const string NeedTransactionSign = "NeedTransactionSign";
         public const string PushTxDialog = "PushTxDialog";
+
+        public const string Operation = "Operation";
+        public const string OperationCreated = "OperationCreated";
 
         public const string Offchain = "Offchain";
         public const string OffchainRequest = "OffchainRequest";
@@ -75,6 +79,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return NeedTransactionSign;
                 case NotificationType.OffchainRequest:
                     return Offchain;
+                case NotificationType.OperationCreated:
+                    return Operation;
                 case NotificationType.ClientDialog:
                     return ClientDialog;
                 default:
@@ -106,6 +112,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return MarginCall;
                 case NotificationType.OffchainRequest:
                     return OffchainRequest;
+                case NotificationType.OperationCreated:
+                    return OperationCreated;
                 case NotificationType.NeedTransactionSign:
                     return NeedTransactionSign;
                 case NotificationType.PushTxDialog:
