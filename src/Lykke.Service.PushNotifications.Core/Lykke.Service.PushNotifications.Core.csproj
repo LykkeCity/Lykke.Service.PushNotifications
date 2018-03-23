@@ -8,12 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="1.1.97" />
+    <PackageReference Include="Lykke.Common" Version="6.0.0" />
+    <PackageReference Include="Lykke.SettingsReader" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Domain\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\client\Lykke.Service.PushNotifications.Client\Lykke.Service.PushNotifications.Client.csproj" />
+    <ProjectReference Include="..\..\client\Lykke.Service.PushNotifications.Contract\Lykke.Service.PushNotifications.Contract.csproj" />
   </ItemGroup>
 
 </Project>

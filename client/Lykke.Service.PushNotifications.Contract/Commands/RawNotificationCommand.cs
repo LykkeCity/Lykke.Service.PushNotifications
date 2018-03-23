@@ -1,15 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Lykke.Service.PushNotifications.Contract.Enums;
 
-namespace Lykke.Service.PushNotifications.Models
+namespace Lykke.Service.PushNotifications.Contract.Commands
 {
-    public class RawNotificationModel
+    public class RawNotificationCommand
     {
-        [Required]
         public string NotificationId { get; set; }
-        [Required]
         public string Payload { get; set; }
-        [Required]
         public MobileOs MobileOs { get; set; }
     }
 }

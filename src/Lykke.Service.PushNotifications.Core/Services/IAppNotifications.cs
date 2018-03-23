@@ -1,31 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Lykke.Service.PushNotifications.Contract.Enums;
 
 namespace Lykke.Service.PushNotifications.Core.Services
 {
-    public enum NotificationType
-    {
-        Info = 0,
-        KycSucceess,
-        KycRestrictedArea,
-        KycNeedToFillDocuments,
-        TransctionFailed,
-        TransactionConfirmed,
-        AssetsCredited,
-        BackupWarning,
-        EthNeedTransactionSign,
-        PositionOpened,
-        PositionClosed,
-        MarginCall,        
-        OffchainRequest,
-        NeedTransactionSign,
-        PushTxDialog,        
-        LimitOrderEvent,
-        LiveAvailable,
-        ClientDialog,
-        OperationCreated,
-    }
-
     public static class EventsAndEntities
     {
         // ReSharper disable once InconsistentNaming

@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Common;
 using Common.Log;
+using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Lykke.Service.PushNotifications.Core.Services;

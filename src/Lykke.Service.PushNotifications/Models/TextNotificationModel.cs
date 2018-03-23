@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Services;
 
 namespace Lykke.Service.PushNotifications.Models
