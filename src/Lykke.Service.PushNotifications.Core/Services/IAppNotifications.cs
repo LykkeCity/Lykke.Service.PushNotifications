@@ -70,6 +70,7 @@ namespace Lykke.Service.PushNotifications.Core.Services
         {
             switch (notification)
             {
+                case NotificationType.Info:                    
                 case NotificationType.KycSucceess:
                     return Ok;
                 case NotificationType.KycRestrictedArea:
