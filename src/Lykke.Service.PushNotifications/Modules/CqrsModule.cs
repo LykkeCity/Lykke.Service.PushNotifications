@@ -11,12 +11,13 @@ using Lykke.Service.PushNotifications.Workflow.CommandHandlers;
 using Lykke.SettingsReader;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.Service.PushNotifications.Contract.Commands;
 
 namespace Lykke.Service.PushNotifications.Modules
 {
     public class CqrsModule : Module
     {
-        public static readonly string Self = PushNotificationsBoundedContext.Name;
+        public static readonly string PushNotifications = PushNotificationsBoundedContext.Name;
 
         private readonly IReloadingManager<AppSettings> _settings;
         private readonly ILog _log;
@@ -31,52 +32,57 @@ namespace Lykke.Service.PushNotifications.Modules
         {
             string commandsRoute = "commands";
             string eventsRoute = "events";
-            Messaging.Serialization.MessagePackSerializerFactory.Defaults.FormatterResolver = MessagePack.Resolvers.ContractlessStandardResolver.Instance;
-            var rabbitMqMeSettings = new RabbitMQ.Client.ConnectionFactory { Uri = _settings.CurrentValue.PushNotificationsService.Cqrs.RabbitConnectionString };
+            Messaging.Serialization.MessagePackSerializerFactory.Defaults.FormatterResolver = MessagePack.Resolvers.ContractlessStandardResolver.Instance;            
+            var rabbitMqClientSettings = new RabbitMQ.Client.ConnectionFactory { Uri = _settings.CurrentValue.Transports.ClientRabbitMqConnectionString };
 
             builder.Register(context => new AutofacDependencyResolver(context)).As<IDependencyResolver>();
             builder.RegisterType<NotificationCommandsHandler>().SingleInstance();
-
-            #region ME_Rabbit
-
+            
             var messagingEngineMeRabbit = new MessagingEngine(_log,
                 new TransportResolver(new Dictionary<string, TransportInfo>
                 {
-                    {"RabbitMq", new TransportInfo(rabbitMqMeSettings.Endpoint.ToString(), rabbitMqMeSettings.UserName, rabbitMqMeSettings.Password, "None", "RabbitMq")}
+                    {
+                        "ClientRabbitMq", new TransportInfo(rabbitMqClientSettings.Endpoint.ToString(), rabbitMqClientSettings.UserName, rabbitMqClientSettings.Password, "None", "RabbitMq")
+                    }
                 }),
                 new RabbitMqTransportFactory());
 
             //Get all types from Commands namespace
             var pushNotificationsCommands = typeof(PushNotificationsBoundedContext).Assembly
                                             .GetTypes()
-                                            .Where(x => x.Namespace == "Lykke.Service.PushNotifications.Contract.Commands")
+                                            .Where(x => x.Namespace == typeof(TextNotificationCommand).Namespace)
                                             .ToArray();
+            
+            var clientEndpointResolver = new RabbitMqConventionEndpointResolver(
+                "ClientRabbitMq",
+                "messagepack",
+                environment: "lykke",
+                exclusiveQueuePostfix: "k8s");
 
             builder.Register(ctx =>
-            {
-                return new CqrsEngine(_log,
-                    ctx.Resolve<IDependencyResolver>(),
-                    messagingEngineMeRabbit,
-                    new DefaultEndpointProvider(),
-                    true,
-                    Register.DefaultEndpointResolver(new RabbitMqConventionEndpointResolver(
-                        "RabbitMq",
-                        "messagepack",
-                        environment: "lykke",
-                        exclusiveQueuePostfix: "k8s")),
+                {
+                    return new CqrsEngine(_log,
+                        ctx.Resolve<IDependencyResolver>(),
+                        messagingEngineMeRabbit,
+                        new DefaultEndpointProvider(),
+                        true,
+                        Register.DefaultEndpointResolver(new RabbitMqConventionEndpointResolver(
+                            "ClientRabbitMq",
+                            "messagepack",
+                            environment: "lykke",
+                            exclusiveQueuePostfix: "k8s")),
 
-                    Register.BoundedContext(Self)
-                    .ListeningCommands(pushNotificationsCommands)
-                    .On(commandsRoute)
-                    .WithCommandsHandler<NotificationCommandsHandler>()
-                    .ProcessingOptions(commandsRoute).MultiThreaded(4).QueueCapacity(1024)
+                        Register.BoundedContext(PushNotifications)
+                            .ListeningCommands(pushNotificationsCommands)
+                            .On(commandsRoute)
+                            .WithEndpointResolver(clientEndpointResolver)
+                            .WithCommandsHandler<NotificationCommandsHandler>()
+                            .ProcessingOptions(commandsRoute).MultiThreaded(4).QueueCapacity(1024)
                     );
-            })
+                })
             .As<ICqrsEngine>()
             .SingleInstance()
-            .AutoActivate();
-
-            #endregion
+            .AutoActivate();            
         }
     }
 }
