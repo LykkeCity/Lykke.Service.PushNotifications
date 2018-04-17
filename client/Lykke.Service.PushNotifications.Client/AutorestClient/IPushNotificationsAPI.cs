@@ -43,7 +43,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<ErrorResponse>> SendDataNotificationToAllDevicesWithHttpMessagesAsync(DataNotificationModel model = default(DataNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendDataNotificationToAllDevicesPostWithHttpMessagesAsync(DataNotificationModel model = default(DataNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='model'>
         /// </param>
@@ -53,7 +53,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<ErrorResponse>> SendTextNotificationWithHttpMessagesAsync(TextNotificationModel model = default(TextNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendTextNotificationPostWithHttpMessagesAsync(TextNotificationModel model = default(TextNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='model'>
         /// </param>
@@ -63,7 +63,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<ErrorResponse>> SendPushTxDialogWithHttpMessagesAsync(PushTxDialogModel model = default(PushTxDialogModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendPushTxDialogPostWithHttpMessagesAsync(PushTxDialogModel model = default(PushTxDialogModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='model'>
         /// </param>
@@ -73,7 +73,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<ErrorResponse>> SendAssetsCreditedNotificationWithHttpMessagesAsync(AssetsCreditedModel model = default(AssetsCreditedModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendAssetsCreditedNotificationPostWithHttpMessagesAsync(AssetsCreditedModel model = default(AssetsCreditedModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='model'>
         /// </param>
@@ -83,7 +83,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<ErrorResponse>> SendRawNotificationWithHttpMessagesAsync(RawNotificationModel model = default(RawNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendRawNotificationPostWithHttpMessagesAsync(RawNotificationModel model = default(RawNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Checks service is alive
@@ -94,7 +94,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<object>> IsAliveWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> ApiIsAliveGetWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

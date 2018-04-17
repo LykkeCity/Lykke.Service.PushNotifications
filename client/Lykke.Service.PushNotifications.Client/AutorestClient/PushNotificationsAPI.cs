@@ -114,7 +114,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// </summary>
         private void Initialize()
         {
-            BaseUri = new System.Uri("http://localhost/");
+            BaseUri = new System.Uri("http://localhost:5000/");
             SerializationSettings = new JsonSerializerSettings
             {
                 Formatting = Newtonsoft.Json.Formatting.Indented,
@@ -159,12 +159,8 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<ErrorResponse>> SendDataNotificationToAllDevicesWithHttpMessagesAsync(DataNotificationModel model = default(DataNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendDataNotificationToAllDevicesPostWithHttpMessagesAsync(DataNotificationModel model = default(DataNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (model != null)
-            {
-                model.Validate();
-            }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -174,7 +170,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("model", model);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SendDataNotificationToAllDevices", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "ApiAppNotificationsSendDataNotificationToAllDevicesPost", tracingParameters);
             }
             // Construct URL
             var _baseUrl = BaseUri.AbsoluteUri;
@@ -289,12 +285,8 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<ErrorResponse>> SendTextNotificationWithHttpMessagesAsync(TextNotificationModel model = default(TextNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendTextNotificationPostWithHttpMessagesAsync(TextNotificationModel model = default(TextNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (model != null)
-            {
-                model.Validate();
-            }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -304,7 +296,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("model", model);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SendTextNotification", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "ApiAppNotificationsSendTextNotificationPost", tracingParameters);
             }
             // Construct URL
             var _baseUrl = BaseUri.AbsoluteUri;
@@ -419,7 +411,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<ErrorResponse>> SendPushTxDialogWithHttpMessagesAsync(PushTxDialogModel model = default(PushTxDialogModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendPushTxDialogPostWithHttpMessagesAsync(PushTxDialogModel model = default(PushTxDialogModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (model != null)
             {
@@ -434,7 +426,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("model", model);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SendPushTxDialog", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "ApiAppNotificationsSendPushTxDialogPost", tracingParameters);
             }
             // Construct URL
             var _baseUrl = BaseUri.AbsoluteUri;
@@ -549,7 +541,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<ErrorResponse>> SendAssetsCreditedNotificationWithHttpMessagesAsync(AssetsCreditedModel model = default(AssetsCreditedModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendAssetsCreditedNotificationPostWithHttpMessagesAsync(AssetsCreditedModel model = default(AssetsCreditedModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (model != null)
             {
@@ -564,7 +556,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("model", model);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SendAssetsCreditedNotification", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "ApiAppNotificationsSendAssetsCreditedNotificationPost", tracingParameters);
             }
             // Construct URL
             var _baseUrl = BaseUri.AbsoluteUri;
@@ -679,7 +671,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<ErrorResponse>> SendRawNotificationWithHttpMessagesAsync(RawNotificationModel model = default(RawNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ErrorResponse>> ApiAppNotificationsSendRawNotificationPostWithHttpMessagesAsync(RawNotificationModel model = default(RawNotificationModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (model != null)
             {
@@ -694,7 +686,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("model", model);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SendRawNotification", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "ApiAppNotificationsSendRawNotificationPost", tracingParameters);
             }
             // Construct URL
             var _baseUrl = BaseUri.AbsoluteUri;
@@ -810,7 +802,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<object>> IsAliveWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<object>> ApiIsAliveGetWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -820,7 +812,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "IsAlive", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "ApiIsAliveGet", tracingParameters);
             }
             // Construct URL
             var _baseUrl = BaseUri.AbsoluteUri;

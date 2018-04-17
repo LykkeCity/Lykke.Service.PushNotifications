@@ -123,8 +123,11 @@ namespace Lykke.Service.PushNotifications.Services
             _hubName = hubName;
         }
 
-        public async Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, NotificationType type, string entity, string id = "")
+        public async Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, string notificationType, string entity, string id = "")
         {
+            if (!Enum.TryParse(notificationType, out NotificationType type))
+                throw new InvalidOperationException($"{notificationType} is unknown");
+
             var apnsMessage = new IosNotification
             {
                 Aps = new DataNotificationFields
@@ -147,8 +150,11 @@ namespace Lykke.Service.PushNotifications.Services
             await SendAndroidNotificationAsync(notificationIds, gcmMessage);
         }
 
-        public async Task SendTextNotificationAsync(string[] notificationIds, NotificationType type, string message)
+        public async Task SendTextNotificationAsync(string[] notificationIds, string notificationType, string message)
         {
+            if (!Enum.TryParse(notificationType, out NotificationType type))
+                throw new InvalidOperationException($"{notificationType} is unknown");
+
             var apnsMessage = new IosNotification
             {
                 Aps = new IosFields

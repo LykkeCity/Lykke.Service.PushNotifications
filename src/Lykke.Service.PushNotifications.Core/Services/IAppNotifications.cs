@@ -38,6 +38,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
         {
             switch (notification)
             {
+                case NotificationType.Info:
+                    return Ok;
                 case NotificationType.KycSucceess:
                 case NotificationType.KycRestrictedArea:
                 case NotificationType.KycNeedToFillDocuments:
@@ -61,6 +63,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return Operation;
                 case NotificationType.ClientDialog:
                     return ClientDialog;
+                case NotificationType.TradingSessionCreated:
+                    return "Session";
                 default:
                     throw new ArgumentException("Unknown notification");
             }
@@ -101,6 +105,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return LiveAvailable;
                 case NotificationType.ClientDialog:
                     return ClientDialogRequest;
+                case NotificationType.TradingSessionCreated:
+                    return "TradingSessionCreated";
                 default:
                     throw new ArgumentException("Unknown notification");
             }
@@ -109,9 +115,9 @@ namespace Lykke.Service.PushNotifications.Core.Services
 
     public interface IAppNotifications
     {
-        Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, NotificationType type, string entity, string id = "");
+        Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, string type, string entity, string id = "");
 
-        Task SendTextNotificationAsync(string[] notificationsIds, NotificationType type, string message);
+        Task SendTextNotificationAsync(string[] notificationsIds, string type, string message);
 
         Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
             string addressTo, string message);
