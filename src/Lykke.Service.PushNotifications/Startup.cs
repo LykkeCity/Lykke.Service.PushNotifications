@@ -56,6 +56,7 @@ namespace Lykke.Service.PushNotifications
                 Log = CreateLogWithSlack(services, appSettings);
 
                 builder.RegisterModule(new ServiceModule(appSettings.Nested(x => x.PushNotificationsService), Log));
+                builder.RegisterModule(new CqrsModule(appSettings, Log));
                 builder.Populate(services);
                 ApplicationContainer = builder.Build();
 
@@ -80,7 +81,10 @@ namespace Lykke.Service.PushNotifications
                 app.UseLykkeMiddleware("PushNotifications", ex => new {Message = "Technical problem"});
 
                 app.UseMvc();
-                app.UseSwagger();
+                app.UseSwagger(c =>
+                {
+                    c.PreSerializeFilters.Add((swagger, httpReq) => swagger.Host = httpReq.Host.Value);
+                });
                 app.UseSwaggerUi();
                 app.UseStaticFiles();
 

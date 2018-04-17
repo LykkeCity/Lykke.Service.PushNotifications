@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version>1.0.1</Version>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Lykke</Authors>
+    <Company>Lykke</Company>
+    <Description>Contract with commands to PushNotification bounded context</Description>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/14153330?v=3&amp;s=200</PackageIconUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Lykke</PackageTags>
+    <PackageProjectUrl>https://github.com/LykkeCity/Lykke.Service.PushNotifications</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/LykkeCity/Lykke.Service.PushNotifications</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lykke.Messaging" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
+using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Services;
 using Newtonsoft.Json;
 
