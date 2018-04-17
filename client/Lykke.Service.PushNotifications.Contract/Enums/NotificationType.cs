@@ -25,5 +25,6 @@ namespace Lykke.Service.PushNotifications.Contract.Enums
         LiveAvailable,
         ClientDialog,
         OperationCreated,
+        TradingSessionCreated
     }
 }

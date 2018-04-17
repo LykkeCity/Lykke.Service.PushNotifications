@@ -61,6 +61,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return Operation;
                 case NotificationType.ClientDialog:
                     return ClientDialog;
+                case NotificationType.TradingSessionCreated:
+                    return "Session";
                 default:
                     throw new ArgumentException("Unknown notification");
             }
@@ -101,6 +103,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return LiveAvailable;
                 case NotificationType.ClientDialog:
                     return ClientDialogRequest;
+                case NotificationType.TradingSessionCreated:
+                    return "TradingSessionCreated";
                 default:
                     throw new ArgumentException("Unknown notification");
             }
