@@ -113,9 +113,9 @@ namespace Lykke.Service.PushNotifications.Core.Services
 
     public interface IAppNotifications
     {
-        Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, NotificationType type, string entity, string id = "");
+        Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, string type, string entity, string id = "");
 
-        Task SendTextNotificationAsync(string[] notificationsIds, NotificationType type, string message);
+        Task SendTextNotificationAsync(string[] notificationsIds, string type, string message);
 
         Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
             string addressTo, string message);

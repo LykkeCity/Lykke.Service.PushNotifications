@@ -6,7 +6,7 @@ namespace Lykke.Service.PushNotifications.Contract.Commands
     public class TextNotificationCommand
     {
         public IEnumerable<string> NotificationIds { get; set; }
-        public NotificationType Type { get; set; }
+        public string Type { get; set; }
         public string Message { get; set; }
     }
 }
