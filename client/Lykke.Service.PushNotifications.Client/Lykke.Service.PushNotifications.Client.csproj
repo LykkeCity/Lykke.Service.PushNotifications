@@ -26,4 +26,15 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+  <ItemGroup Label="dotnet pack instructions">
+    <Content Include="$(OutputPath)Lykke.Service.PushNotifications.Contract.dll">
+      <Pack>true</Pack>
+      <PackagePath>lib/netstandard2.0</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lykke.Service.PushNotifications.Contract\Lykke.Service.PushNotifications.Contract.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>

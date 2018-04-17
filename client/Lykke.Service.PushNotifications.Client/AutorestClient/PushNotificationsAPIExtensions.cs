@@ -21,9 +21,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// </param>
             /// <param name='model'>
             /// </param>
-            public static ErrorResponse SendDataNotificationToAllDevices(this IPushNotificationsAPI operations, DataNotificationModel model = default(DataNotificationModel))
+            public static ErrorResponse ApiAppNotificationsSendDataNotificationToAllDevicesPost(this IPushNotificationsAPI operations, DataNotificationModel model = default(DataNotificationModel))
             {
-                return operations.SendDataNotificationToAllDevicesAsync(model).GetAwaiter().GetResult();
+                return operations.ApiAppNotificationsSendDataNotificationToAllDevicesPostAsync(model).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -34,9 +34,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ErrorResponse> SendDataNotificationToAllDevicesAsync(this IPushNotificationsAPI operations, DataNotificationModel model = default(DataNotificationModel), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ErrorResponse> ApiAppNotificationsSendDataNotificationToAllDevicesPostAsync(this IPushNotificationsAPI operations, DataNotificationModel model = default(DataNotificationModel), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.SendDataNotificationToAllDevicesWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiAppNotificationsSendDataNotificationToAllDevicesPostWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -47,9 +47,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// </param>
             /// <param name='model'>
             /// </param>
-            public static ErrorResponse SendTextNotification(this IPushNotificationsAPI operations, TextNotificationModel model = default(TextNotificationModel))
+            public static ErrorResponse ApiAppNotificationsSendTextNotificationPost(this IPushNotificationsAPI operations, TextNotificationModel model = default(TextNotificationModel))
             {
-                return operations.SendTextNotificationAsync(model).GetAwaiter().GetResult();
+                return operations.ApiAppNotificationsSendTextNotificationPostAsync(model).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -60,9 +60,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ErrorResponse> SendTextNotificationAsync(this IPushNotificationsAPI operations, TextNotificationModel model = default(TextNotificationModel), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ErrorResponse> ApiAppNotificationsSendTextNotificationPostAsync(this IPushNotificationsAPI operations, TextNotificationModel model = default(TextNotificationModel), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.SendTextNotificationWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiAppNotificationsSendTextNotificationPostWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -73,9 +73,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// </param>
             /// <param name='model'>
             /// </param>
-            public static ErrorResponse SendPushTxDialog(this IPushNotificationsAPI operations, PushTxDialogModel model = default(PushTxDialogModel))
+            public static ErrorResponse ApiAppNotificationsSendPushTxDialogPost(this IPushNotificationsAPI operations, PushTxDialogModel model = default(PushTxDialogModel))
             {
-                return operations.SendPushTxDialogAsync(model).GetAwaiter().GetResult();
+                return operations.ApiAppNotificationsSendPushTxDialogPostAsync(model).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -86,9 +86,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ErrorResponse> SendPushTxDialogAsync(this IPushNotificationsAPI operations, PushTxDialogModel model = default(PushTxDialogModel), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ErrorResponse> ApiAppNotificationsSendPushTxDialogPostAsync(this IPushNotificationsAPI operations, PushTxDialogModel model = default(PushTxDialogModel), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.SendPushTxDialogWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiAppNotificationsSendPushTxDialogPostWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -99,9 +99,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// </param>
             /// <param name='model'>
             /// </param>
-            public static ErrorResponse SendAssetsCreditedNotification(this IPushNotificationsAPI operations, AssetsCreditedModel model = default(AssetsCreditedModel))
+            public static ErrorResponse ApiAppNotificationsSendAssetsCreditedNotificationPost(this IPushNotificationsAPI operations, AssetsCreditedModel model = default(AssetsCreditedModel))
             {
-                return operations.SendAssetsCreditedNotificationAsync(model).GetAwaiter().GetResult();
+                return operations.ApiAppNotificationsSendAssetsCreditedNotificationPostAsync(model).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -112,9 +112,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ErrorResponse> SendAssetsCreditedNotificationAsync(this IPushNotificationsAPI operations, AssetsCreditedModel model = default(AssetsCreditedModel), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ErrorResponse> ApiAppNotificationsSendAssetsCreditedNotificationPostAsync(this IPushNotificationsAPI operations, AssetsCreditedModel model = default(AssetsCreditedModel), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.SendAssetsCreditedNotificationWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiAppNotificationsSendAssetsCreditedNotificationPostWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -125,9 +125,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// </param>
             /// <param name='model'>
             /// </param>
-            public static ErrorResponse SendRawNotification(this IPushNotificationsAPI operations, RawNotificationModel model = default(RawNotificationModel))
+            public static ErrorResponse ApiAppNotificationsSendRawNotificationPost(this IPushNotificationsAPI operations, RawNotificationModel model = default(RawNotificationModel))
             {
-                return operations.SendRawNotificationAsync(model).GetAwaiter().GetResult();
+                return operations.ApiAppNotificationsSendRawNotificationPostAsync(model).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -138,9 +138,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ErrorResponse> SendRawNotificationAsync(this IPushNotificationsAPI operations, RawNotificationModel model = default(RawNotificationModel), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ErrorResponse> ApiAppNotificationsSendRawNotificationPostAsync(this IPushNotificationsAPI operations, RawNotificationModel model = default(RawNotificationModel), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.SendRawNotificationWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiAppNotificationsSendRawNotificationPostWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -152,9 +152,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            public static object IsAlive(this IPushNotificationsAPI operations)
+            public static object ApiIsAliveGet(this IPushNotificationsAPI operations)
             {
-                return operations.IsAliveAsync().GetAwaiter().GetResult();
+                return operations.ApiIsAliveGetAsync().GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -166,9 +166,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> IsAliveAsync(this IPushNotificationsAPI operations, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> ApiIsAliveGetAsync(this IPushNotificationsAPI operations, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.IsAliveWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiIsAliveGetWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

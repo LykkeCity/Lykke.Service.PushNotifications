@@ -26,14 +26,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient.Models
         /// <summary>
         /// Initializes a new instance of the TextNotificationModel class.
         /// </summary>
-        /// <param name="type">Possible values include: 'Info', 'KycSucceess',
-        /// 'KycRestrictedArea', 'KycNeedToFillDocuments', 'TransctionFailed',
-        /// 'TransactionConfirmed', 'AssetsCredited', 'BackupWarning',
-        /// 'EthNeedTransactionSign', 'PositionOpened', 'PositionClosed',
-        /// 'MarginCall', 'OffchainRequest', 'NeedTransactionSign',
-        /// 'PushTxDialog', 'LimitOrderEvent', 'LiveAvailable', 'ClientDialog',
-        /// 'OperationCreated'</param>
-        public TextNotificationModel(NotificationType type, IList<string> notificationIds = default(IList<string>), string message = default(string))
+        public TextNotificationModel(IList<string> notificationIds = default(IList<string>), string type = default(string), string message = default(string))
         {
             NotificationIds = notificationIds;
             Type = type;
@@ -52,30 +45,14 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient.Models
         public IList<string> NotificationIds { get; set; }
 
         /// <summary>
-        /// Gets or sets possible values include: 'Info', 'KycSucceess',
-        /// 'KycRestrictedArea', 'KycNeedToFillDocuments', 'TransctionFailed',
-        /// 'TransactionConfirmed', 'AssetsCredited', 'BackupWarning',
-        /// 'EthNeedTransactionSign', 'PositionOpened', 'PositionClosed',
-        /// 'MarginCall', 'OffchainRequest', 'NeedTransactionSign',
-        /// 'PushTxDialog', 'LimitOrderEvent', 'LiveAvailable', 'ClientDialog',
-        /// 'OperationCreated'
         /// </summary>
         [JsonProperty(PropertyName = "Type")]
-        public NotificationType Type { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "Message")]
         public string Message { get; set; }
 
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown if validation fails
-        /// </exception>
-        public virtual void Validate()
-        {
-        }
     }
 }

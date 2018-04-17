@@ -22,9 +22,9 @@ namespace Lykke.Service.PushNotifications.Client
             _apiClient = null;
         }
 
-        public async Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, NotificationType type, string entity, string id)
+        public async Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, string type, string entity, string id)
         {
-            var error = await _apiClient.SendDataNotificationToAllDevicesAsync(new DataNotificationModel
+            var error = await _apiClient.ApiAppNotificationsSendDataNotificationToAllDevicesPostAsync(new DataNotificationModel
             {
                 NotificationIds = notificationIds,
                 Id = id,
@@ -38,9 +38,9 @@ namespace Lykke.Service.PushNotifications.Client
             }
         }
 
-        public async Task SendTextNotificationAsync(string[] notificationsIds, NotificationType type, string message)
+        public async Task SendTextNotificationAsync(string[] notificationsIds, string type, string message)
         {
-            var error = await _apiClient.SendTextNotificationAsync(new TextNotificationModel
+            var error = await _apiClient.ApiAppNotificationsSendTextNotificationPostAsync(new TextNotificationModel
             {
                 NotificationIds = notificationsIds,
                 Type = type,
@@ -56,7 +56,7 @@ namespace Lykke.Service.PushNotifications.Client
         public async Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
             string addressTo, string message)
         {
-            var error = await _apiClient.SendPushTxDialogAsync(new PushTxDialogModel
+            var error = await _apiClient.ApiAppNotificationsSendPushTxDialogPostAsync(new PushTxDialogModel
             {
                 NotiicationIds = notificationsIds,
                 Amount = amount,
@@ -74,7 +74,7 @@ namespace Lykke.Service.PushNotifications.Client
 
         public async Task SendAssetsCreditedNotificationAsync(string[] notificationsIds, double amount, string assetId, string message)
         {
-            var error = await _apiClient.SendAssetsCreditedNotificationAsync(new AssetsCreditedModel
+            var error = await _apiClient.ApiAppNotificationsSendAssetsCreditedNotificationPostAsync(new AssetsCreditedModel
             {
                 NotificationIds = notificationsIds,
                 Message = message,
@@ -90,7 +90,7 @@ namespace Lykke.Service.PushNotifications.Client
 
         public async Task SendRawIosNotificationAsync(string notificationId, string payload)
         {
-            var error = await _apiClient.SendRawNotificationAsync(new RawNotificationModel
+            var error = await _apiClient.ApiAppNotificationsSendRawNotificationPostAsync(new RawNotificationModel
             {
                 NotificationId = notificationId,
                 Payload = payload,
@@ -105,7 +105,7 @@ namespace Lykke.Service.PushNotifications.Client
 
         public async Task SendRawAndroidNotificationAsync(string notificationId, string payload)
         {
-            var error = await _apiClient.SendRawNotificationAsync(new RawNotificationModel
+            var error = await _apiClient.ApiAppNotificationsSendRawNotificationPostAsync(new RawNotificationModel
             {
                 NotificationId = notificationId,
                 Payload = payload,
