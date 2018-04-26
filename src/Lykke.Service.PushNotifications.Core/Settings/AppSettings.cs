@@ -8,14 +8,14 @@ namespace Lykke.Service.PushNotifications.Core.Settings
     {
         public PushNotificationsSettings PushNotificationsService { get; set; }
         public SlackNotificationsSettings SlackNotifications { get; set; }
-        public TransportSettings Transports { get; set; }
+        public SagasRabbitMq SagasRabbitMq { get; set; }
     }
 
-    public class TransportSettings
+    public class SagasRabbitMq
     {
         [AmqpCheck]
-        public string ClientRabbitMqConnectionString { get; set; }
-        [AmqpCheck]
-        public string MeRabbitMqConnectionString { get; set; }
+        public string RabbitConnectionString { get; set; }
+        
+        public string RetryDelay { get; set; }
     }
 }

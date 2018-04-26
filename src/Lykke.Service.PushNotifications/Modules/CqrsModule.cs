@@ -33,7 +33,7 @@ namespace Lykke.Service.PushNotifications.Modules
             string commandsRoute = "commands";
             string eventsRoute = "events";
             Messaging.Serialization.MessagePackSerializerFactory.Defaults.FormatterResolver = MessagePack.Resolvers.ContractlessStandardResolver.Instance;            
-            var rabbitMqClientSettings = new RabbitMQ.Client.ConnectionFactory { Uri = _settings.CurrentValue.Transports.ClientRabbitMqConnectionString };
+            var rabbitMqClientSettings = new RabbitMQ.Client.ConnectionFactory { Uri = _settings.CurrentValue.SagasRabbitMq.RabbitConnectionString };
 
             builder.Register(context => new AutofacDependencyResolver(context)).As<IDependencyResolver>();
             builder.RegisterType<NotificationCommandsHandler>().SingleInstance();
@@ -42,7 +42,7 @@ namespace Lykke.Service.PushNotifications.Modules
                 new TransportResolver(new Dictionary<string, TransportInfo>
                 {
                     {
-                        "ClientRabbitMq", new TransportInfo(rabbitMqClientSettings.Endpoint.ToString(), rabbitMqClientSettings.UserName, rabbitMqClientSettings.Password, "None", "RabbitMq")
+                        "SagasRabbitMq", new TransportInfo(rabbitMqClientSettings.Endpoint.ToString(), rabbitMqClientSettings.UserName, rabbitMqClientSettings.Password, "None", "RabbitMq")
                     }
                 }),
                 new RabbitMqTransportFactory());
@@ -54,7 +54,7 @@ namespace Lykke.Service.PushNotifications.Modules
                                             .ToArray();
             
             var clientEndpointResolver = new RabbitMqConventionEndpointResolver(
-                "ClientRabbitMq",
+                "SagasRabbitMq",
                 "messagepack",
                 environment: "lykke",
                 exclusiveQueuePostfix: "k8s");
@@ -67,7 +67,7 @@ namespace Lykke.Service.PushNotifications.Modules
                         new DefaultEndpointProvider(),
                         true,
                         Register.DefaultEndpointResolver(new RabbitMqConventionEndpointResolver(
-                            "ClientRabbitMq",
+                            "SagasRabbitMq",
                             "messagepack",
                             environment: "lykke",
                             exclusiveQueuePostfix: "k8s")),
