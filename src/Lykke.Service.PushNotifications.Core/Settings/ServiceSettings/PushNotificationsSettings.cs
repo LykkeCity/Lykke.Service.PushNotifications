@@ -5,7 +5,5 @@ namespace Lykke.Service.PushNotifications.Core.Settings.ServiceSettings
         public DbSettings Db { get; set; }
         public string HubConnectionString { get; set; }
         public string HubName { get; set; }
-
-        public CqrsSettings Cqrs { get; set; }
     }
 }
