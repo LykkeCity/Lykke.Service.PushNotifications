@@ -33,9 +33,8 @@ namespace Lykke.Service.PushNotifications.Controllers
         public async Task<IActionResult> SendDataNotificationToAllDevicesAsync([FromBody] DataNotificationModel model)
         {
             try
-            {
-                await _appNotifications.SendDataNotificationToAllDevicesAsync(model.NotificationIds.ToArray(),
-                    model.Type, model.Entity, model.Id);
+            {                
+                await _appNotifications.SendDataNotificationToAllDevicesAsync(model.NotificationIds.ToArray(), model.Type, model.Entity, model.Id);                                
             }
             catch (Exception e)
             {

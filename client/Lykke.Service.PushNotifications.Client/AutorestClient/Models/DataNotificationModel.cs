@@ -26,14 +26,7 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient.Models
         /// <summary>
         /// Initializes a new instance of the DataNotificationModel class.
         /// </summary>
-        /// <param name="type">Possible values include: 'Info', 'KycSucceess',
-        /// 'KycRestrictedArea', 'KycNeedToFillDocuments', 'TransctionFailed',
-        /// 'TransactionConfirmed', 'AssetsCredited', 'BackupWarning',
-        /// 'EthNeedTransactionSign', 'PositionOpened', 'PositionClosed',
-        /// 'MarginCall', 'OffchainRequest', 'NeedTransactionSign',
-        /// 'PushTxDialog', 'LimitOrderEvent', 'LiveAvailable', 'ClientDialog',
-        /// 'OperationCreated'</param>
-        public DataNotificationModel(NotificationType type, IList<string> notificationIds = default(IList<string>), string entity = default(string), string id = default(string))
+        public DataNotificationModel(IList<string> notificationIds = default(IList<string>), string type = default(string), string entity = default(string), string id = default(string))
         {
             NotificationIds = notificationIds;
             Type = type;
@@ -53,16 +46,9 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient.Models
         public IList<string> NotificationIds { get; set; }
 
         /// <summary>
-        /// Gets or sets possible values include: 'Info', 'KycSucceess',
-        /// 'KycRestrictedArea', 'KycNeedToFillDocuments', 'TransctionFailed',
-        /// 'TransactionConfirmed', 'AssetsCredited', 'BackupWarning',
-        /// 'EthNeedTransactionSign', 'PositionOpened', 'PositionClosed',
-        /// 'MarginCall', 'OffchainRequest', 'NeedTransactionSign',
-        /// 'PushTxDialog', 'LimitOrderEvent', 'LiveAvailable', 'ClientDialog',
-        /// 'OperationCreated'
         /// </summary>
         [JsonProperty(PropertyName = "Type")]
-        public NotificationType Type { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// </summary>
@@ -74,14 +60,5 @@ namespace Lykke.Service.PushNotifications.Client.AutorestClient.Models
         [JsonProperty(PropertyName = "Id")]
         public string Id { get; set; }
 
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown if validation fails
-        /// </exception>
-        public virtual void Validate()
-        {
-        }
     }
 }

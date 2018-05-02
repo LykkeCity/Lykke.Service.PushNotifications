@@ -10,7 +10,7 @@ namespace Lykke.Service.PushNotifications.Models
         [Required]
         public IEnumerable<string> NotificationIds { get; set; }
         [Required]
-        public NotificationType Type { get; set; }
+        public string Type { get; set; }
         [Required]
         public string Entity { get; set; }
         public string Id { get; set; }
