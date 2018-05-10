@@ -3,33 +3,33 @@
   {
     "Db": 
     {
-      "LogsConnString": "DefaultEndpointsProtocol=https;AccountName=lkedevlogs;AccountKey=mhOA//Lv9BvDyIBFqDRNsdSa+hgr2Mix+9dCOAnJUT3EHx0fQrl7itHrEsOcosCcovWNNSw+r5+lYfQ8+H9V4A=="
+      "LogsConnString": "${PushNotificationsServiceLogsConnStr}"
     },
-    "HubConnectionString": "Endpoint=sb://lykke-dev.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=wrtiOyjvl3XopqTwnjQ+7WL3DQrIYjsH870AVxEmdPk=",
-    "HubName": "lykke-notifications-dev",
+    "HubConnectionString": "${PushNotificationsServiceHubConnStr}",
+    "HubName": "${PushNotificationsServiceHubName}",
     "Cqrs": 
     {
-      "RabbitConnectionString": "amqp://lykke.history:lykke.history@rabbit-me.lykke-me.svc.cluster.local:5672",
-      "RetryDelay": "00:00:10"
+      "RabbitConnectionString": "${PushNotificationsServiceCqrsConnStr}",
+      "RetryDelay": "${PushNotificationsServiceCqrsDelay}"
     }
   },
   "SagasRabbitMq": 
   {
-    "RabbitConnectionString": "amqp://lykke.history:lykke.history@rabbit-me.lykke-me.svc.cluster.local:5672",
-    "RetryDelay": "00:00:10"
+    "RabbitConnectionString": "${PushNotificationsServiceSagasConnStr}",
+    "RetryDelay": "${PushNotificationsServiceSagasDelay}"
   },
   "SlackNotifications": 
   {
     "AzureQueue": 
     {
-      "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=lkedevshared;AccountKey=deMBXlOj0telRE7poKY+2P9MwPcSsOJ+1IUqG6xoQ3kdDAMhxzvh22zKAXnlaKyPeF0gpbzgK4k7M9ZLdlTx+w==",
-      "QueueName": "slack-notifications"
+      "ConnectionString": "${SlackConnString}",
+      "QueueName": "${SlackQueueName}"
     },
-    "ThrottlingLimitSeconds": 60
+    "ThrottlingLimitSeconds": "${SlackThrottlingLimitSeconds}"
   },
   "Transports": 
   {
-    "ClientRabbitMqConnectionString": "amqp://lykke.history:lykke.history@rabbit-main.rabbits.svc.cluster.local:5672",
-    "MeRabbitMqConnectionString": "amqp://lykke.history:lykke.history@rabbit-me.lykke-me.svc.cluster.local:5672"
+    "ClientRabbitMqConnectionString": "${PushNotificationsServiceClientRabbitMq}",
+    "MeRabbitMqConnectionString": "${PushNotificationsServiceMeRabbitMq}"
   }
 }
