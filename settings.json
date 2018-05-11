@@ -29,7 +29,7 @@
   },
   "Transports": 
   {
-    "ClientRabbitMqConnectionString": "${PushNotificationsServiceClientRabbitMq}:[RabbiMQ]",
+    "ClientRabbitMqConnectionString": "${PushNotificationsServiceClientRabbitMq}:[RabbitMQ]",
     "MeRabbitMqConnectionString": "${PushNotificationsServiceMeRabbitMq}:[RabbitMQ]"
   }
 }
