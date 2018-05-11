@@ -3,33 +3,33 @@
   {
     "Db": 
     {
-      "LogsConnString": "${PushNotificationsServiceLogsConnStr}"
+      "LogsConnString": "${PushNotificationsServiceLogsConnStr}:[Logs, AzureTableStorage]"
     },
     "HubConnectionString": "${PushNotificationsServiceHubConnStr}",
-    "HubName": "${PushNotificationsServiceHubName}",
+    "HubName": "${PushNotificationsServiceHubName}:[Name]",
     "Cqrs": 
     {
-      "RabbitConnectionString": "${PushNotificationsServiceCqrsConnStr}",
-      "RetryDelay": "${PushNotificationsServiceCqrsDelay}"
+      "RabbitConnectionString": "${PushNotificationsServiceCqrsConnStr}:[RabbitMQ]",
+      "RetryDelay": "${PushNotificationsServiceCqrsDelay}:[Timestamp]"
     }
   },
   "SagasRabbitMq": 
   {
-    "RabbitConnectionString": "${PushNotificationsServiceSagasConnStr}",
-    "RetryDelay": "${PushNotificationsServiceSagasDelay}"
+    "RabbitConnectionString": "${PushNotificationsServiceSagasConnStr}:[RabbitMQ]",
+    "RetryDelay": "${PushNotificationsServiceSagasDelay}:[Timestamp]"
   },
   "SlackNotifications": 
   {
     "AzureQueue": 
     {
-      "ConnectionString": "${SlackConnString}",
-      "QueueName": "${SlackQueueName}"
+      "ConnectionString": "${SlackConnString}:[AzureTableStorage]",
+      "QueueName": "${SlackQueueName}:[Name]"
     },
-    "ThrottlingLimitSeconds": "${SlackThrottlingLimitSeconds}"
+    "ThrottlingLimitSeconds": "${SlackThrottlingLimitSeconds}:[Timestamp]"
   },
   "Transports": 
   {
-    "ClientRabbitMqConnectionString": "${PushNotificationsServiceClientRabbitMq}",
-    "MeRabbitMqConnectionString": "${PushNotificationsServiceMeRabbitMq}"
+    "ClientRabbitMqConnectionString": "${PushNotificationsServiceClientRabbitMq}:[RabbiMQ]",
+    "MeRabbitMqConnectionString": "${PushNotificationsServiceMeRabbitMq}:[RabbitMQ]"
   }
 }
