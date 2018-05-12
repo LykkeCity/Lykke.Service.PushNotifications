@@ -1,0 +1,35 @@
+{
+  "PushNotificationsService": 
+  {
+    "Db": 
+    {
+      "LogsConnString": "${PushNotificationsServiceLogsConnStr}:[Logs, AzureTableStorage]"
+    },
+    "HubConnectionString": "${PushNotificationsServiceHubConnStr}",
+    "HubName": "${PushNotificationsServiceHubName}:[Name]",
+    "Cqrs": 
+    {
+      "RabbitConnectionString": "${PushNotificationsServiceCqrsConnStr}:[RabbitMQ]",
+      "RetryDelay": "${PushNotificationsServiceCqrsDelay}:[Timestamp]"
+    }
+  },
+  "SagasRabbitMq": 
+  {
+    "RabbitConnectionString": "${PushNotificationsServiceSagasConnStr}:[RabbitMQ]",
+    "RetryDelay": "${PushNotificationsServiceSagasDelay}:[Timestamp]"
+  },
+  "SlackNotifications": 
+  {
+    "AzureQueue": 
+    {
+      "ConnectionString": "${SlackConnString}:[AzureTableStorage]",
+      "QueueName": "${SlackQueueName}:[Name]"
+    },
+    "ThrottlingLimitSeconds": "${SlackThrottlingLimitSeconds}:[Timestamp]"
+  },
+  "Transports": 
+  {
+    "ClientRabbitMqConnectionString": "${PushNotificationsServiceClientRabbitMq}:[RabbitMQ]",
+    "MeRabbitMqConnectionString": "${PushNotificationsServiceMeRabbitMq}:[RabbitMQ]"
+  }
+}
