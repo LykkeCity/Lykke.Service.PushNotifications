@@ -34,6 +34,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
 
         public const string LiveAvailable = "LiveAvailable";
 
+        public const string LimitOrderEvent = "LimitOrderEvent";
+
         public static string GetEntity(NotificationType notification)
         {
             switch (notification)
@@ -65,6 +67,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return ClientDialog;
                 case NotificationType.TradingSessionCreated:
                     return "Session";
+                case NotificationType.LimitOrderEvent:
+                    return LimitOrderEvent;
                 default:
                     throw new ArgumentException("Unknown notification");
             }
@@ -74,7 +78,7 @@ namespace Lykke.Service.PushNotifications.Core.Services
         {
             switch (notification)
             {
-                case NotificationType.Info:                    
+                case NotificationType.Info:
                 case NotificationType.KycSucceess:
                     return Ok;
                 case NotificationType.KycRestrictedArea:
@@ -107,6 +111,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return ClientDialogRequest;
                 case NotificationType.TradingSessionCreated:
                     return "TradingSessionCreated";
+                case NotificationType.LimitOrderEvent:
+                    return LimitOrderEvent;
                 default:
                     throw new ArgumentException("Unknown notification");
             }
@@ -118,6 +124,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
         Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, string type, string entity, string id = "");
 
         Task SendTextNotificationAsync(string[] notificationsIds, string type, string message);
+
+        Task SendLimitOrderNotification(string[] notificationsIds, string message, string orderType, string orderStatus);
 
         Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
             string addressTo, string message);

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common;
 using Lykke.Service.PushNotifications.Contract.Enums;
+using Lykke.Service.PushNotifications.Core.Domain;
 using Lykke.Service.PushNotifications.Core.Services;
 using Newtonsoft.Json;
 
@@ -48,6 +49,13 @@ namespace Lykke.Service.PushNotifications.Services
         public double Amount { get; set; }
         [JsonProperty("assetId")]
         public string AssetId { get; set; }
+    }
+    public class LimitOrderFieldsIos : IosFields
+    {
+        [JsonProperty("orderType")]
+        public OrderType OrderType { get; set; }
+        [JsonProperty("orderStatus")]
+        public OrderStatus OrderStatus { get; set; }
     }
 
     public class AssetsCreditedFieldsAndroid : AndroidPayloadFields
@@ -176,6 +184,38 @@ namespace Lykke.Service.PushNotifications.Services
 
             await SendIosNotificationAsync(notificationIds, apnsMessage);
             await SendAndroidNotificationAsync(notificationIds, gcmMessage);
+        }
+
+        public async Task SendLimitOrderNotification(string[] notificationsIds, string message, string orderType,
+            string orderStatus)
+        {
+            if (!Enum.TryParse(orderType, out OrderType type))
+                throw new InvalidOperationException($"{orderType} is unknown");
+            if (!Enum.TryParse(orderStatus, out OrderStatus status))
+                throw new InvalidOperationException($"{orderStatus} is unknown");
+
+            var apnsMessage = new IosNotification
+            {
+                Aps = new LimitOrderFieldsIos
+                {
+                    Alert = message,
+                    Type = NotificationType.LimitOrderEvent,
+                    OrderStatus = status,
+                    OrderType = type
+                }
+            };
+
+            var gcmMessage = new AndoridPayloadNotification
+            {
+                Data = new AndroidPayloadFields
+                {
+                    Entity = EventsAndEntities.GetEntity(NotificationType.LimitOrderEvent),
+                    Event = EventsAndEntities.GetEvent(NotificationType.LimitOrderEvent),
+                    Message = message,
+                }
+            };
+            await SendIosNotificationAsync(notificationsIds, apnsMessage);
+            await SendAndroidNotificationAsync(notificationsIds, gcmMessage);
         }
 
         public async Task SendAssetsCreditedNotification(string[] notificationsIds, double amount, string assetId, string message)
