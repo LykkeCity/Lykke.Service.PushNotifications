@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Common;
 using Common.Log;
@@ -115,6 +113,26 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             catch (Exception e)
             {
                 _log.WriteError(nameof(TextNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+
+                return CommandHandlingResult.Fail(_retrySeconds);
+            }
+
+            return CommandHandlingResult.Ok();
+        }
+
+        public async Task<CommandHandlingResult> Handle(LimitOrderNotificationCommand command)
+        {
+            try
+            {
+                await _appNotifications.SendLimitOrderNotification(
+                    command.NotificationIds.ToArray(),
+                    command.Message,
+                    command.OrderType,
+                    command.OrderStatus);
+            }
+            catch (Exception e)
+            {
+                _log.WriteError(nameof(LimitOrderNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
