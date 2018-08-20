@@ -6,7 +6,6 @@ using Lykke.Messaging;
 using Lykke.Messaging.RabbitMq;
 using Lykke.Service.PushNotifications.Contract;
 using Lykke.Service.PushNotifications.Core.Settings;
-using Lykke.Service.PushNotifications.Utils;
 using Lykke.Service.PushNotifications.Workflow.CommandHandlers;
 using Lykke.SettingsReader;
 using System.Collections.Generic;
@@ -55,7 +54,7 @@ namespace Lykke.Service.PushNotifications.Modules
             
             var clientEndpointResolver = new RabbitMqConventionEndpointResolver(
                 "SagasRabbitMq",
-                "messagepack",
+                Messaging.Serialization.SerializationFormat.MessagePack,
                 environment: "lykke",
                 exclusiveQueuePostfix: "k8s");
 
@@ -68,7 +67,7 @@ namespace Lykke.Service.PushNotifications.Modules
                         true,
                         Register.DefaultEndpointResolver(new RabbitMqConventionEndpointResolver(
                             "SagasRabbitMq",
-                            "messagepack",
+                            Messaging.Serialization.SerializationFormat.MessagePack,
                             environment: "lykke",
                             exclusiveQueuePostfix: "k8s")),
 
