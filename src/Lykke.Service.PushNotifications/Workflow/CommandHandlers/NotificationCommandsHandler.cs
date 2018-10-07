@@ -145,7 +145,9 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             try
             {
                 await _appNotifications.SendMtOrderChangedNotification(
-                    command.NotificationIds.ToArray(),
+                    command.NotificationIds == null
+                        ? Array.Empty<string>()
+                        : command.NotificationIds.ToArray(),
                     command.Type,
                     command.Message,
                     command.OrderId);
