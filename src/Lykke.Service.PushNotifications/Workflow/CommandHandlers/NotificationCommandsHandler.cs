@@ -139,5 +139,25 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
 
             return CommandHandlingResult.Ok();
         }
+        
+        public async Task<CommandHandlingResult> Handle(MtOrderChangedNotificationCommand command)
+        {
+            try
+            {
+                await _appNotifications.SendMtOrderChangedNotification(
+                    command.NotificationIds.ToArray(),
+                    command.Type,
+                    command.Message,
+                    command.OrderId);
+            }
+            catch (Exception e)
+            {
+                _log.WriteError(nameof(MtOrderChangedNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+
+                return CommandHandlingResult.Fail(_retrySeconds);
+            }
+
+            return CommandHandlingResult.Ok();
+        }
     }
 }

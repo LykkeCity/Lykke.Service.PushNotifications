@@ -50,6 +50,7 @@ namespace Lykke.Service.PushNotifications.Services
         [JsonProperty("assetId")]
         public string AssetId { get; set; }
     }
+    
     public class LimitOrderFieldsIos : IosFields
     {
         [JsonProperty("orderType")]
@@ -100,6 +101,24 @@ namespace Lykke.Service.PushNotifications.Services
 
         [JsonProperty("pushTxItem")]
         public PushDialogTxItemModel PushTxItem { get; set; }
+    }
+    
+    public class AndroidMtPositionFields : AndroidPayloadFields
+    {
+        [JsonProperty("order")]
+        public MtOrderModel Order { get; set; }
+    }
+    
+    public class IosMtPositionFields : IosFields
+    {
+        [JsonProperty("order")]
+        public MtOrderModel Order { get; set; }
+    }
+    
+    public class MtOrderModel
+    {
+        [JsonProperty("Id")]
+        public string Id { get; set; }
     }
 
     public class IosNotification : IIosNotification
@@ -216,6 +235,38 @@ namespace Lykke.Service.PushNotifications.Services
             };
             await SendIosNotificationAsync(notificationsIds, apnsMessage);
             await SendAndroidNotificationAsync(notificationsIds, gcmMessage);
+        }
+
+        public async Task SendMtOrderChangedNotification(string[] notificationIds, string notificationType, string message, string orderId)
+        {
+            if (!Enum.TryParse(notificationType, out NotificationType type))
+                throw new InvalidOperationException($"{notificationType} is unknown");
+
+            var mtOrder = new MtOrderModel {Id = orderId};
+
+            var apnsMessage = new IosNotification
+            {
+                Aps = new IosMtPositionFields
+                {
+                    Alert = message,
+                    Type = type,
+                    Order = mtOrder
+                }
+            };
+
+            var gcmMessage = new AndoridPayloadNotification
+            {
+                Data = new AndroidMtPositionFields
+                {
+                    Entity = EventsAndEntities.GetEntity(type),
+                    Event = EventsAndEntities.GetEvent(type),
+                    Message = message,
+                    Order = mtOrder
+                }
+            };
+
+            await SendIosNotificationAsync(notificationIds, apnsMessage);
+            await SendAndroidNotificationAsync(notificationIds, gcmMessage);
         }
 
         public async Task SendAssetsCreditedNotification(string[] notificationsIds, double amount, string assetId, string message)
