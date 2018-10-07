@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Lykke.Service.PushNotifications.Contract.Enums
+﻿namespace Lykke.Service.PushNotifications.Contract.Enums
 {
     public enum NotificationType
     {

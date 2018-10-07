@@ -126,6 +126,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
         Task SendTextNotificationAsync(string[] notificationsIds, string type, string message);
 
         Task SendLimitOrderNotification(string[] notificationsIds, string message, string orderType, string orderStatus);
+        
+        Task SendMtOrderChangedNotification(string[] notificationIds, string notificationType, string message, string orderId);
 
         Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
             string addressTo, string message);
