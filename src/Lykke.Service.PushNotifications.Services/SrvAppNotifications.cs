@@ -242,7 +242,9 @@ namespace Lykke.Service.PushNotifications.Services
             if (!Enum.TryParse(notificationType, out NotificationType type))
                 throw new InvalidOperationException($"{notificationType} is unknown");
 
-            var mtOrder = new MtOrderModel {Id = orderId};
+            var mtOrder = !string.IsNullOrEmpty(orderId)
+                ? new MtOrderModel {Id = orderId}
+                : null;
 
             var apnsMessage = new IosNotification
             {
