@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Lykke.Service.PushNotifications.Contract.Commands
+namespace Lykke.Service.PushNotifications.Contract.Events
 {
-    public class DataNotificationCommand
+    public class DataNotificationEvent
     {
         public IEnumerable<string> NotificationIds { get; set; }
         public string Type { get; set; }

@@ -16,8 +16,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
         private readonly ILog _log;
         private readonly IAppNotifications _appNotifications;
 
-        public NotificationCommandsHandler(ILog log,
-            IAppNotifications appNotifications)
+        public NotificationCommandsHandler(ILog log, IAppNotifications appNotifications)
         {
             _log = log.CreateComponentScope(nameof(NotificationCommandsHandler));
             _appNotifications = appNotifications;
@@ -32,7 +31,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(AssetsCreditedCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.WriteError(nameof(AssetsCreditedCommand), command.ToJson(), e);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -49,13 +48,12 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(DataNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.WriteError(nameof(DataNotificationCommand), command.ToJson(), e);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
 
             return CommandHandlingResult.Ok();
-
         }
 
         public async Task<CommandHandlingResult> Handle(PushTxDialogCommand command)
@@ -67,7 +65,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(PushTxDialogCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.WriteError(nameof(PushTxDialogCommand), command.ToJson(), e);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -88,14 +86,14 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
                         await _appNotifications.SendRawAndroidNotification(command.NotificationId, command.Payload);
                         break;
                     default:
-                        _log.WriteError(nameof(RawNotificationCommand), command.ToJson(), new Exception("Unsupported Mobile Type"), DateTime.UtcNow);
+                        _log.WriteError(nameof(RawNotificationCommand), command.ToJson(), new Exception("Unsupported Mobile Type"));
 
                         return CommandHandlingResult.Ok();
                 }
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(RawNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.WriteError(nameof(RawNotificationCommand), command.ToJson(), e);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -112,7 +110,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(TextNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.WriteError(nameof(TextNotificationCommand), command.ToJson(), e);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -132,7 +130,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(LimitOrderNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.WriteError(nameof(LimitOrderNotificationCommand), command.ToJson(), e);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -154,7 +152,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(MtOrderChangedNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.WriteError(nameof(MtOrderChangedNotificationCommand), command.ToJson(), e);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }

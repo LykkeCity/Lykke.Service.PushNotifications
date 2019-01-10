@@ -3,12 +3,13 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AzureStorage.Tables;
 using Common.Log;
+using Lykke.Common;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Service.PushNotifications.Core.Services;
-using Lykke.Service.PushNotifications.Core.Settings;
 using Lykke.Service.PushNotifications.Modules;
+using Lykke.Service.PushNotifications.Settings;
 using Lykke.SettingsReader;
 using Lykke.SlackNotification.AzureQueue;
 using Microsoft.AspNetCore.Builder;
@@ -20,6 +21,9 @@ namespace Lykke.Service.PushNotifications
 {
     public class Startup
     {
+        private const string _apiVersion = "v1";
+        private const string _apiTitle = "PushNotifications API";
+
         public IHostingEnvironment Environment { get; }
         public IContainer ApplicationContainer { get; private set; }
         public IConfigurationRoot Configuration { get; }
@@ -48,23 +52,30 @@ namespace Lykke.Service.PushNotifications
 
                 services.AddSwaggerGen(options =>
                 {
-                    options.DefaultLykkeConfiguration("v1", "PushNotifications API");
+                    options.DefaultLykkeConfiguration(_apiVersion, _apiTitle);
                 });
 
                 var builder = new ContainerBuilder();
-                var appSettings = Configuration.LoadSettings<AppSettings>();
+                var appSettings = Configuration.LoadSettings<AppSettings>(o =>
+                {
+                    o.SetConnString(s => s.SlackNotifications.AzureQueue.ConnectionString);
+                    o.SetQueueName(s => s.SlackNotifications.AzureQueue.QueueName);
+                    o.SenderName = $"{AppEnvironment.Name} {AppEnvironment.Version}";
+                });
                 Log = CreateLogWithSlack(services, appSettings);
 
                 builder.RegisterModule(new ServiceModule(appSettings.Nested(x => x.PushNotificationsService), Log));
                 builder.RegisterModule(new CqrsModule(appSettings, Log));
+
                 builder.Populate(services);
+
                 ApplicationContainer = builder.Build();
 
                 return new AutofacServiceProvider(ApplicationContainer);
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(ConfigureServices), "", ex);
+                Log?.WriteFatalError(nameof(Startup), nameof(ConfigureServices), ex);
                 throw;
             }
         }
@@ -85,7 +96,14 @@ namespace Lykke.Service.PushNotifications
                 {
                     c.PreSerializeFilters.Add((swagger, httpReq) => swagger.Host = httpReq.Host.Value);
                 });
-                app.UseSwaggerUi();
+                app.UseSwaggerUI(x =>
+                {
+                    x.RoutePrefix = "swagger/ui";
+                    x.SwaggerEndpoint($"/swagger/{_apiVersion}/swagger.json", _apiVersion);
+
+                    if (!string.IsNullOrWhiteSpace(_apiTitle))
+                        x.DocumentTitle(_apiTitle);
+                });
                 app.UseStaticFiles();
 
                 appLifetime.ApplicationStarted.Register(StartApplication);
@@ -94,7 +112,7 @@ namespace Lykke.Service.PushNotifications
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(ConfigureServices), "", ex);
+                Log?.WriteFatalError(nameof(Startup), nameof(ConfigureServices), ex);
                 throw;
             }
         }
@@ -105,11 +123,11 @@ namespace Lykke.Service.PushNotifications
             {
                 // NOTE: Service not yet recieve and process requests here
 
-                ApplicationContainer.Resolve<IStartupManager>().StartAsync().Wait();
+                ApplicationContainer.Resolve<IStartupManager>().StartAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(StartApplication), "", ex);
+                Log?.WriteFatalError(nameof(Startup), nameof(StartApplication), ex);
                 throw;
             }
         }
@@ -120,11 +138,11 @@ namespace Lykke.Service.PushNotifications
             {
                 // NOTE: Service still can recieve and process requests here, so take care about it if you add logic here.
 
-                ApplicationContainer.Resolve<IShutdownManager>().StopAsync().Wait();
+                ApplicationContainer.Resolve<IShutdownManager>().StopAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(StopApplication), "", ex);
+                Log?.WriteFatalError(nameof(Startup), nameof(StopApplication), ex);
                 throw;
             }
         }
@@ -139,7 +157,7 @@ namespace Lykke.Service.PushNotifications
             }
             catch (Exception ex)
             {
-                Log?.WriteFatalErrorAsync(nameof(Startup), nameof(CleanUp), "", ex);
+                Log?.WriteFatalError(nameof(Startup), nameof(CleanUp), ex);
                 throw;
             }
         }

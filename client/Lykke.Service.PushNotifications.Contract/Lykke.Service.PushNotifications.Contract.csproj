@@ -13,8 +13,4 @@
     <RepositoryUrl>https://github.com/LykkeCity/Lykke.Service.PushNotifications</RepositoryUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Lykke.Messaging" Version="6.0.1" />
-  </ItemGroup>
-
 </Project>

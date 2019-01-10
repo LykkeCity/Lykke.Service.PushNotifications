@@ -1,16 +1,18 @@
-﻿using Autofac;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Autofac;
 using Common.Log;
 using Lykke.Cqrs;
 using Lykke.Cqrs.Configuration;
 using Lykke.Messaging;
 using Lykke.Messaging.RabbitMq;
 using Lykke.Service.PushNotifications.Contract;
-using Lykke.Service.PushNotifications.Core.Settings;
-using Lykke.Service.PushNotifications.Workflow.CommandHandlers;
-using Lykke.SettingsReader;
-using System.Collections.Generic;
-using System.Linq;
 using Lykke.Service.PushNotifications.Contract.Commands;
+using Lykke.Service.PushNotifications.Contract.Events;
+using Lykke.Service.PushNotifications.Settings;
+using Lykke.Service.PushNotifications.Workflow.CommandHandlers;
+using Lykke.Service.PushNotifications.Workflow.Sagas;
+using Lykke.SettingsReader;
 
 namespace Lykke.Service.PushNotifications.Modules
 {
@@ -36,7 +38,8 @@ namespace Lykke.Service.PushNotifications.Modules
 
             builder.Register(context => new AutofacDependencyResolver(context)).As<IDependencyResolver>();
             builder.RegisterType<NotificationCommandsHandler>().SingleInstance();
-            
+            builder.RegisterType<NotificationSaga>().SingleInstance();
+
             var messagingEngineMeRabbit = new MessagingEngine(_log,
                 new TransportResolver(new Dictionary<string, TransportInfo>
                 {
@@ -51,7 +54,7 @@ namespace Lykke.Service.PushNotifications.Modules
                                             .GetTypes()
                                             .Where(x => x.Namespace == typeof(TextNotificationCommand).Namespace)
                                             .ToArray();
-            
+
             var clientEndpointResolver = new RabbitMqConventionEndpointResolver(
                 "SagasRabbitMq",
                 Messaging.Serialization.SerializationFormat.MessagePack,
@@ -60,8 +63,9 @@ namespace Lykke.Service.PushNotifications.Modules
 
             builder.Register(ctx =>
                 {
-                    return new CqrsEngine(_log,
-                        ctx.Resolve<IDependencyResolver>(),
+                    var engine = new CqrsEngine(
+                        _log,
+                        new AutofacDependencyResolver(ctx),
                         messagingEngineMeRabbit,
                         new DefaultEndpointProvider(),
                         true,
@@ -76,12 +80,19 @@ namespace Lykke.Service.PushNotifications.Modules
                             .On(commandsRoute)
                             .WithEndpointResolver(clientEndpointResolver)
                             .WithCommandsHandler<NotificationCommandsHandler>()
-                            .ProcessingOptions(commandsRoute).MultiThreaded(4).QueueCapacity(1024)
+                            .ProcessingOptions(commandsRoute).MultiThreaded(4).QueueCapacity(1024),
+
+                        Register.Saga<NotificationSaga>(PushNotifications)
+                            .ListeningEvents(typeof(DataNotificationEvent))
+                            .From("tx-handler.offchain").On(eventsRoute)
+                            .ProcessingOptions(eventsRoute).MultiThreaded(4).QueueCapacity(1024)
                     );
+                    engine.StartPublishers();
+                    return engine;
                 })
             .As<ICqrsEngine>()
             .SingleInstance()
-            .AutoActivate();            
+            .AutoActivate();
         }
     }
 }

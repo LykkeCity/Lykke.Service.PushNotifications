@@ -1,4 +1,4 @@
-namespace Lykke.Service.PushNotifications.Core.Settings.ServiceSettings
+namespace Lykke.Service.PushNotifications.Settings.ServiceSettings
 {
     public class PushNotificationsSettings
     {

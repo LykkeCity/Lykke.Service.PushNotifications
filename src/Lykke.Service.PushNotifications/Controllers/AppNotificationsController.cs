@@ -6,10 +6,10 @@ using Common;
 using Common.Log;
 using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Filters;
-using Microsoft.AspNetCore.Mvc;
 using Lykke.Service.PushNotifications.Core.Services;
 using Lykke.Service.PushNotifications.Models;
-using Swashbuckle.SwaggerGen.Annotations;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Lykke.Service.PushNotifications.Controllers
 {
@@ -33,13 +33,12 @@ namespace Lykke.Service.PushNotifications.Controllers
         public async Task<IActionResult> SendDataNotificationToAllDevicesAsync([FromBody] DataNotificationModel model)
         {
             try
-            {                
-                await _appNotifications.SendDataNotificationToAllDevicesAsync(model.NotificationIds.ToArray(), model.Type, model.Entity, model.Id);                                
+            {
+                await _appNotifications.SendDataNotificationToAllDevicesAsync(model.NotificationIds.ToArray(), model.Type, model.Entity, model.Id);
             }
             catch (Exception e)
             {
-                await _log.WriteErrorAsync(GetType().Name, "SendDataNotificationToAllDevicesAsync", model.ToJson(), e,
-                    DateTime.UtcNow);
+                _log.WriteError($"{nameof(AppNotificationsController)}:{nameof(SendDataNotificationToAllDevicesAsync)}", model.ToJson(), e);
                 return BadRequest(ErrorResponse.Create(e.Message));
             }
 
@@ -59,8 +58,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             }
             catch (Exception e)
             {
-                await _log.WriteErrorAsync(GetType().Name, "SendTextNotificationAsync", model.ToJson(), e,
-                    DateTime.UtcNow);
+                _log.WriteError($"{nameof(AppNotificationsController)}:{nameof(SendTextNotificationAsync)}", model.ToJson(), e);
                 return BadRequest(ErrorResponse.Create(e.Message));
             }
 
@@ -80,8 +78,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             }
             catch (Exception e)
             {
-                await _log.WriteErrorAsync(GetType().Name, "SendPushTxDialogAsync", model.ToJson(), e,
-                    DateTime.UtcNow);
+                _log.WriteErrorAsync($"{nameof(AppNotificationsController)}:{nameof(SendPushTxDialogAsync)}", model.ToJson(), e);
                 return BadRequest(ErrorResponse.Create(e.Message));
             }
 
@@ -101,8 +98,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             }
             catch (Exception e)
             {
-                await _log.WriteErrorAsync(GetType().Name, "SendAssetsCreditedNotificationAsync", model.ToJson(), e,
-                    DateTime.UtcNow);
+                _log.WriteErrorAsync($"{nameof(AppNotificationsController)}:{nameof(SendAssetsCreditedNotificationAsync)}", model.ToJson(), e);
                 return BadRequest(ErrorResponse.Create(e.Message));
             }
 
@@ -131,8 +127,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             }
             catch (Exception e)
             {
-                await _log.WriteErrorAsync(GetType().Name, "SendRawNotificationAsync", model.ToJson(), e,
-                    DateTime.UtcNow);
+                _log.WriteErrorAsync($"{nameof(AppNotificationsController)}:{nameof(SendRawNotificationAsync)}", model.ToJson(), e);
                 return BadRequest(ErrorResponse.Create(e.Message));
             }
 

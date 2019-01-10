@@ -1,11 +1,9 @@
 ﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Common.Log;
 using Lykke.Service.PushNotifications.Core.Services;
-using Lykke.Service.PushNotifications.Core.Settings.ServiceSettings;
 using Lykke.Service.PushNotifications.Services;
+using Lykke.Service.PushNotifications.Settings.ServiceSettings;
 using Lykke.SettingsReader;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Lykke.Service.PushNotifications.Modules
 {
@@ -13,15 +11,11 @@ namespace Lykke.Service.PushNotifications.Modules
     {
         private readonly IReloadingManager<PushNotificationsSettings> _settings;
         private readonly ILog _log;
-        // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
-        private readonly IServiceCollection _services;
 
         public ServiceModule(IReloadingManager<PushNotificationsSettings> settings, ILog log)
         {
             _settings = settings;
             _log = log;
-
-            _services = new ServiceCollection();
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -42,8 +36,6 @@ namespace Lykke.Service.PushNotifications.Modules
 
             builder.Register<IAppNotifications>(x =>
                 new SrvAppNotifications(_settings.CurrentValue.HubConnectionString, _settings.CurrentValue.HubName));
-
-            builder.Populate(_services);
         }
     }
 }

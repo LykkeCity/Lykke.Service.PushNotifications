@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="2.16.3" />
     <PackageReference Include="Flurl.Http" Version="1.2.0" />
-    <PackageReference Include="Lykke.Common" Version="7.0.3" />
+    <PackageReference Include="Lykke.Cqrs" Version="8.1.0" />
   </ItemGroup>
 
   <ItemGroup>

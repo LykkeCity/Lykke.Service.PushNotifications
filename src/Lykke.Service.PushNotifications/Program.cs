@@ -1,30 +1,33 @@
 ﻿using System;
 using System.IO;
+using Lykke.Common;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Lykke.Service.PushNotifications
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
-            Console.WriteLine($"PushNotifications version {Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion}");
+            Console.WriteLine($"{AppEnvironment.Name} version {AppEnvironment.Version}");
 #if DEBUG
             Console.WriteLine("Is DEBUG");
 #else
             Console.WriteLine("Is RELEASE");
-#endif           
+#endif
             Console.WriteLine($"ENV_INFO: {Environment.GetEnvironmentVariable("ENV_INFO")}");
 
             try
             {
-                var host = new WebHostBuilder()
+                var hostBuilder = new WebHostBuilder()
                     .UseKestrel()
                     .UseUrls("http://*:5000")
                     .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<Startup>()
-                    .UseApplicationInsights()
-                    .Build();
+                    .UseStartup<Startup>();
+#if !DEBUG
+                hostBuilder = hostBuilder.UseApplicationInsights();
+#endif
+                var host = hostBuilder.Build();
 
                 host.Run();
             }

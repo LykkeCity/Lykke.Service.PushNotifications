@@ -1,8 +1,8 @@
-﻿using Lykke.Service.PushNotifications.Core.Settings.ServiceSettings;
-using Lykke.Service.PushNotifications.Core.Settings.SlackNotifications;
+﻿using Lykke.Service.PushNotifications.Settings.ServiceSettings;
+using Lykke.Service.PushNotifications.Settings.SlackNotifications;
 using Lykke.SettingsReader.Attributes;
 
-namespace Lykke.Service.PushNotifications.Core.Settings
+namespace Lykke.Service.PushNotifications.Settings
 {
     public class AppSettings
     {

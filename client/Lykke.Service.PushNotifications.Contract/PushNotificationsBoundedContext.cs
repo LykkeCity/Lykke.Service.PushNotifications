@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Lykke.Service.PushNotifications.Contract
+﻿namespace Lykke.Service.PushNotifications.Contract
 {
     public static class PushNotificationsBoundedContext
     {
