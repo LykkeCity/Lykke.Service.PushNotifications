@@ -2,155 +2,34 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
+using Common.Log;
+using Lykke.Common.Log;
 using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Domain;
 using Lykke.Service.PushNotifications.Core.Services;
-using Newtonsoft.Json;
+using Lykke.Service.PushNotifications.Services.Models;
+using Lykke.Service.PushNotifications.Services.Models.Android;
+using Lykke.Service.PushNotifications.Services.Models.Ios;
+using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.NotificationHubs.Messaging;
+using Polly;
 
 namespace Lykke.Service.PushNotifications.Services
 {
-    public enum Device
-    {
-        Android, Ios
-    }
-
-    public interface IIosNotification { }
-
-    public interface IAndroidNotification { }
-
-    public class IosFields
-    {
-        [JsonProperty("alert")]
-        public string Alert { get; set; }
-        [JsonProperty("type")]
-        public NotificationType Type { get; set; }
-        [JsonProperty("sound")]
-        public string Sound { get; set; } = "default";
-    }
-
-    public class AndroidPayloadFields
-    {
-        [JsonProperty("event")]
-        public string Event { get; set; }
-
-        [JsonProperty("entity")]
-        public string Entity { get; set; }
-
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("message")]
-        public string Message { get; set; }
-    }
-
-    public class AssetsCreditedFieldsIos : IosFields
-    {
-        [JsonProperty("amount")]
-        public double Amount { get; set; }
-        [JsonProperty("assetId")]
-        public string AssetId { get; set; }
-    }
-    
-    public class LimitOrderFieldsIos : IosFields
-    {
-        [JsonProperty("orderType")]
-        public OrderType OrderType { get; set; }
-        [JsonProperty("orderStatus")]
-        public OrderStatus OrderStatus { get; set; }
-    }
-
-    public class AssetsCreditedFieldsAndroid : AndroidPayloadFields
-    {
-        public class BalanceItemModel
-        {
-            [JsonProperty("amount")]
-            public double Amount { get; set; }
-            [JsonProperty("assetId")]
-            public string AssetId { get; set; }
-        }
-
-        [JsonProperty("balanceItem")]
-        public BalanceItemModel BalanceItem { get; set; }
-    }
-
-    public class PushTxDialogFieldsIos : IosFields
-    {
-        [JsonProperty("amount")]
-        public double Amount { get; set; }
-        [JsonProperty("assetId")]
-        public string AssetId { get; set; }
-        [JsonProperty("addressFrom")]
-        public string AddressFrom { get; set; }
-        [JsonProperty("addressTo")]
-        public string AddressTo { get; set; }
-    }
-
-    public class PushTxDialogFieldsAndroid : AndroidPayloadFields
-    {
-        public class PushDialogTxItemModel
-        {
-            [JsonProperty("amount")]
-            public double Amount { get; set; }
-            [JsonProperty("assetId")]
-            public string AssetId { get; set; }
-            [JsonProperty("addressFrom")]
-            public string AddressFrom { get; set; }
-            [JsonProperty("addressTo")]
-            public string AddressTo { get; set; }
-        }
-
-        [JsonProperty("pushTxItem")]
-        public PushDialogTxItemModel PushTxItem { get; set; }
-    }
-    
-    public class AndroidMtPositionFields : AndroidPayloadFields
-    {
-        [JsonProperty("order")]
-        public MtOrderModel Order { get; set; }
-    }
-    
-    public class IosMtPositionFields : IosFields
-    {
-        [JsonProperty("order")]
-        public MtOrderModel Order { get; set; }
-    }
-    
-    public class MtOrderModel
-    {
-        [JsonProperty("Id")]
-        public string Id { get; set; }
-    }
-
-    public class IosNotification : IIosNotification
-    {
-        [JsonProperty("aps")]
-        public IosFields Aps { get; set; }
-    }
-
-    public class AndoridPayloadNotification : IAndroidNotification
-    {
-        [JsonProperty("data")]
-        public AndroidPayloadFields Data { get; set; }
-    }
-
-    public class DataNotificationFields : IosFields
-    {
-        [JsonProperty("content-available")]
-        public int ContentAvailable { get; set; } = 1;
-    }
-
     public class SrvAppNotifications : IAppNotifications
     {
-        private readonly string _connectionString;
-        private readonly string _hubName;
+        private readonly NotificationHubClient _notificationHubClient;
+        private readonly ILog _log;
 
-        public SrvAppNotifications(string connectionString, string hubName)
+        public SrvAppNotifications(
+            NotificationHubClient notificationHubClient,
+            ILogFactory logFactory)
         {
-            _connectionString = connectionString;
-            _hubName = hubName;
+            _notificationHubClient = notificationHubClient;
+            _log = logFactory.CreateLog(this);
         }
 
-        public async Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, string notificationType, string entity, string id = "")
+        public Task SendDataNotificationToAllDevicesAsync(string[] notificationIds, string notificationType, string entity, string id = "")
         {
             if (!Enum.TryParse(notificationType, out NotificationType type))
                 throw new InvalidOperationException($"{notificationType} is unknown");
@@ -173,11 +52,13 @@ namespace Lykke.Service.PushNotifications.Services
                 }
             };
 
-            await SendIosNotificationAsync(notificationIds, apnsMessage);
-            await SendAndroidNotificationAsync(notificationIds, gcmMessage);
+            return Task.WhenAll(
+                SendIosNotificationAsync(notificationIds, apnsMessage),
+                SendAndroidNotificationAsync(notificationIds, gcmMessage)
+            );
         }
 
-        public async Task SendTextNotificationAsync(string[] notificationIds, string notificationType, string message)
+        public Task SendTextNotificationAsync(string[] notificationIds, string notificationType, string message)
         {
             if (!Enum.TryParse(notificationType, out NotificationType type))
                 throw new InvalidOperationException($"{notificationType} is unknown");
@@ -201,15 +82,18 @@ namespace Lykke.Service.PushNotifications.Services
                 }
             };
 
-            await SendIosNotificationAsync(notificationIds, apnsMessage);
-            await SendAndroidNotificationAsync(notificationIds, gcmMessage);
+            return Task.WhenAll(
+                SendIosNotificationAsync(notificationIds, apnsMessage),
+                SendAndroidNotificationAsync(notificationIds, gcmMessage)
+            );
         }
 
-        public async Task SendLimitOrderNotification(string[] notificationsIds, string message, string orderType,
+        public Task SendLimitOrderNotification(string[] notificationsIds, string message, string orderType,
             string orderStatus)
         {
             if (!Enum.TryParse(orderType, out OrderType type))
                 throw new InvalidOperationException($"{orderType} is unknown");
+
             if (!Enum.TryParse(orderStatus, out OrderStatus status))
                 throw new InvalidOperationException($"{orderStatus} is unknown");
 
@@ -233,11 +117,14 @@ namespace Lykke.Service.PushNotifications.Services
                     Message = message,
                 }
             };
-            await SendIosNotificationAsync(notificationsIds, apnsMessage);
-            await SendAndroidNotificationAsync(notificationsIds, gcmMessage);
+
+            return Task.WhenAll(
+                SendIosNotificationAsync(notificationsIds, apnsMessage),
+                SendAndroidNotificationAsync(notificationsIds, gcmMessage)
+            );
         }
 
-        public async Task SendMtOrderChangedNotification(string[] notificationIds, string notificationType, string message, string orderId)
+        public Task SendMtOrderChangedNotification(string[] notificationIds, string notificationType, string message, string orderId)
         {
             if (!Enum.TryParse(notificationType, out NotificationType type))
                 throw new InvalidOperationException($"{notificationType} is unknown");
@@ -267,11 +154,13 @@ namespace Lykke.Service.PushNotifications.Services
                 }
             };
 
-            await SendIosNotificationAsync(notificationIds, apnsMessage);
-            await SendAndroidNotificationAsync(notificationIds, gcmMessage);
+            return Task.WhenAll(
+                SendIosNotificationAsync(notificationIds, apnsMessage),
+                SendAndroidNotificationAsync(notificationIds, gcmMessage)
+            );
         }
 
-        public async Task SendAssetsCreditedNotification(string[] notificationsIds, double amount, string assetId, string message)
+        public Task SendAssetsCreditedNotification(string[] notificationsIds, double amount, string assetId, string message)
         {
             var apnsMessage = new IosNotification
             {
@@ -299,52 +188,60 @@ namespace Lykke.Service.PushNotifications.Services
                 }
             };
 
-            await SendIosNotificationAsync(notificationsIds, apnsMessage);
-            await SendAndroidNotificationAsync(notificationsIds, gcmMessage);
+            return Task.WhenAll(
+                SendIosNotificationAsync(notificationsIds, apnsMessage),
+                SendAndroidNotificationAsync(notificationsIds, gcmMessage)
+            );
         }
 
-        public async Task SendRawIosNotification(string notificationId, string payload)
+        public Task SendRawIosNotification(string notificationId, string payload)
         {
-            await SendRawNotificationAsync(Device.Ios, new[] { notificationId }, payload);
+            return SendRawNotificationAsync(MobileOs.Ios, new[] { notificationId }, payload);
         }
 
-        public async Task SendRawAndroidNotification(string notificationId, string payload)
+        public Task SendRawAndroidNotification(string notificationId, string payload)
         {
-            await SendRawNotificationAsync(Device.Android, new[] { notificationId }, payload);
+            return SendRawNotificationAsync(MobileOs.Android, new[] { notificationId }, payload);
         }
 
-        private async Task SendIosNotificationAsync(string[] notificationIds, IIosNotification notification)
+        private Task SendIosNotificationAsync(string[] notificationIds, IIosNotification notification)
         {
-            await SendRawNotificationAsync(Device.Ios, notificationIds, notification.ToJson(ignoreNulls: true));
+            return SendRawNotificationAsync(MobileOs.Ios, notificationIds, notification.ToJson(ignoreNulls: true));
         }
 
-        private async Task SendAndroidNotificationAsync(string[] notificationIds, IAndroidNotification notification)
+        private Task SendAndroidNotificationAsync(string[] notificationIds, IAndroidNotification notification)
         {
-            await SendRawNotificationAsync(Device.Android, notificationIds, notification.ToJson(ignoreNulls: true));
+            return SendRawNotificationAsync(MobileOs.Android, notificationIds, notification.ToJson(ignoreNulls: true));
         }
 
-        private async Task SendRawNotificationAsync(Device device, string[] notificationIds, string payload)
+        private async Task SendRawNotificationAsync(MobileOs device, string[] notificationIds, string payload)
         {
             try
             {
                 notificationIds = notificationIds?.Where(x => !string.IsNullOrEmpty(x)).ToArray();
                 if (notificationIds != null && notificationIds.Any())
                 {
-                    var hub = CustomNotificationHubClient.CreateClientFromConnectionString(_connectionString, _hubName);
+                    NotificationOutcome outcome;
 
-                    if (device == Device.Ios)
-                        await hub.SendAppleNativeNotificationAsync(payload, notificationIds);
+                    if (device == MobileOs.Ios)
+                        outcome = await _notificationHubClient.SendAppleNativeNotificationAsync(payload, notificationIds);
                     else
-                        await hub.SendGcmNativeNotificationAsync(payload, notificationIds);
+                        outcome = await _notificationHubClient.SendFcmNativeNotificationAsync(payload, notificationIds);
+
+#pragma warning disable 4014
+                    // will only work from Standard tier for azure notification hub
+                    if (!string.IsNullOrEmpty(outcome.NotificationId))
+                        Task.Run(async () => await WaitForThePushStatusAsync(outcome.NotificationId));
+#pragma warning restore 4014
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //TODO: process exception
+                _log.Error(e, context: new { ids = notificationIds, payload });
             }
         }
 
-        public async Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
+        public Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
             string addressTo, string message)
         {
             var apnsMessage = new IosNotification
@@ -377,8 +274,25 @@ namespace Lykke.Service.PushNotifications.Services
                 }
             };
 
-            await SendIosNotificationAsync(notificationsIds, apnsMessage);
-            await SendAndroidNotificationAsync(notificationsIds, gcmMessage);
+            return Task.WhenAll(
+                SendIosNotificationAsync(notificationsIds, apnsMessage),
+                SendAndroidNotificationAsync(notificationsIds, gcmMessage)
+            );
+        }
+
+        private async Task WaitForThePushStatusAsync(string notificationId)
+        {
+            NotificationDetails outcomeDetails = await Policy
+                .Handle<MessagingEntityNotFoundException>()
+                .OrResult<NotificationDetails>(x =>
+                    x != null && (x.State == NotificationOutcomeState.Enqueued || x.State == NotificationOutcomeState.Processing))
+                .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(1))
+                .ExecuteAsync(async() => await _notificationHubClient.GetNotificationOutcomeDetailsAsync(notificationId));
+
+            if (outcomeDetails?.State != NotificationOutcomeState.Completed)
+            {
+                _log.Warning("Failed to send push notification", context: outcomeDetails.ToJson());
+            }
         }
     }
 }
