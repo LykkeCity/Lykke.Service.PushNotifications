@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common;
 using Common.Log;
+using JetBrains.Annotations;
+using Lykke.Common.Log;
 using Lykke.Cqrs;
 using Lykke.Service.PushNotifications.Contract.Commands;
 using Lykke.Service.PushNotifications.Contract.Enums;
@@ -10,16 +12,18 @@ using Lykke.Service.PushNotifications.Core.Services;
 
 namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class NotificationCommandsHandler
     {
         private readonly TimeSpan _retrySeconds = TimeSpan.FromSeconds(30);
         private readonly ILog _log;
         private readonly IAppNotifications _appNotifications;
 
-        public NotificationCommandsHandler(ILog log,
+        public NotificationCommandsHandler(
+            ILogFactory logFactory,
             IAppNotifications appNotifications)
         {
-            _log = log.CreateComponentScope(nameof(NotificationCommandsHandler));
+            _log = logFactory.CreateLog(this);
             _appNotifications = appNotifications;
         }
 
@@ -32,7 +36,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(AssetsCreditedCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.Error(e, context: command);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -49,13 +53,12 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(DataNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.Error(e, context: command);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
 
             return CommandHandlingResult.Ok();
-
         }
 
         public async Task<CommandHandlingResult> Handle(PushTxDialogCommand command)
@@ -67,7 +70,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(PushTxDialogCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.Error(e, context: command);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -88,14 +91,14 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
                         await _appNotifications.SendRawAndroidNotification(command.NotificationId, command.Payload);
                         break;
                     default:
-                        _log.WriteError(nameof(RawNotificationCommand), command.ToJson(), new Exception("Unsupported Mobile Type"), DateTime.UtcNow);
+                        _log.Error(new Exception("Unsupported Mobile Type"), context: command.ToJson());
 
                         return CommandHandlingResult.Ok();
                 }
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(RawNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.Error(e, context: command);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -112,7 +115,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(TextNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.Error(e, context: command);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
@@ -132,14 +135,14 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(LimitOrderNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.Error(e, context: command);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }
 
             return CommandHandlingResult.Ok();
         }
-        
+
         public async Task<CommandHandlingResult> Handle(MtOrderChangedNotificationCommand command)
         {
             try
@@ -154,7 +157,7 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
             }
             catch (Exception e)
             {
-                _log.WriteError(nameof(MtOrderChangedNotificationCommand), command.ToJson(), e, DateTime.UtcNow);
+                _log.Error(e, context: command);
 
                 return CommandHandlingResult.Fail(_retrySeconds);
             }

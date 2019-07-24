@@ -16,13 +16,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
-    <PackageReference Include="Lykke.Common" Version="7.0.4" />
-    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.12" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
+    <PackageReference Include="Lykke.Common" Version="7.4.0" />
+    <PackageReference Include="Lykke.SettingsReader" Version="5.2.0" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.20" />
+    <PackageReference Include="Lykke.HttpClientGenerator" Version="2.5.0" />
+    <PackageReference Include="Refit" Version="4.7.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AutorestClient\" />
     <Folder Include="Models\" />
   </ItemGroup>
 
