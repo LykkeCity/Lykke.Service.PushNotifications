@@ -21,6 +21,8 @@
         LiveAvailable,
         ClientDialog,
         OperationCreated,
-        TradingSessionCreated
+        TradingSessionCreated,
+        TierUpgraded,
+        DepositLimitPercentReached
     }
 }
