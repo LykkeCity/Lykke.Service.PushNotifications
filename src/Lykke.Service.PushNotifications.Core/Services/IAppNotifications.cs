@@ -35,6 +35,7 @@ namespace Lykke.Service.PushNotifications.Core.Services
         public const string LiveAvailable = "LiveAvailable";
 
         public const string LimitOrderEvent = "LimitOrderEvent";
+        public const string Tier = "Tier";
 
         public static string GetEntity(NotificationType notification)
         {
@@ -43,9 +44,12 @@ namespace Lykke.Service.PushNotifications.Core.Services
                 case NotificationType.Info:
                     return Ok;
                 case NotificationType.KycSucceess:
+                    return KYC;
                 case NotificationType.KycRestrictedArea:
                 case NotificationType.KycNeedToFillDocuments:
-                    return KYC;
+                case NotificationType.TierUpgraded:
+                case NotificationType.DepositLimitPercentReached:
+                    return Tier;
                 case NotificationType.TransactionConfirmed:
                 case NotificationType.TransctionFailed:
                 case NotificationType.AssetsCredited:
@@ -78,6 +82,10 @@ namespace Lykke.Service.PushNotifications.Core.Services
         {
             switch (notification)
             {
+                case NotificationType.TierUpgraded:
+                    return NotificationType.TierUpgraded.ToString();
+                case NotificationType.DepositLimitPercentReached:
+                    return NotificationType.DepositLimitPercentReached.ToString();
                 case NotificationType.Info:
                 case NotificationType.KycSucceess:
                     return Ok;
@@ -126,7 +134,7 @@ namespace Lykke.Service.PushNotifications.Core.Services
         Task SendTextNotificationAsync(string[] notificationsIds, string type, string message);
 
         Task SendLimitOrderNotification(string[] notificationsIds, string message, string orderType, string orderStatus);
-        
+
         Task SendMtOrderChangedNotification(string[] notificationIds, string notificationType, string message, string orderId);
 
         Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
