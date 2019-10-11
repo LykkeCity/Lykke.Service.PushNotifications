@@ -45,6 +45,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                 case NotificationType.KycSucceess:
                 case NotificationType.KycRestrictedArea:
                 case NotificationType.KycNeedToFillDocuments:
+                case NotificationType.TierUpgraded:
+                case NotificationType.DepositLimitPercentReached:
                     return KYC;
                 case NotificationType.TransactionConfirmed:
                 case NotificationType.TransctionFailed:
@@ -80,6 +82,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
             {
                 case NotificationType.Info:
                 case NotificationType.KycSucceess:
+                case NotificationType.TierUpgraded:
+                case NotificationType.DepositLimitPercentReached:
                     return Ok;
                 case NotificationType.KycRestrictedArea:
                     return RestrictedArea;
@@ -126,7 +130,7 @@ namespace Lykke.Service.PushNotifications.Core.Services
         Task SendTextNotificationAsync(string[] notificationsIds, string type, string message);
 
         Task SendLimitOrderNotification(string[] notificationsIds, string message, string orderType, string orderStatus);
-        
+
         Task SendMtOrderChangedNotification(string[] notificationIds, string notificationType, string message, string orderId);
 
         Task SendPushTxDialogAsync(string[] notificationsIds, double amount, string assetId, string addressFrom,
