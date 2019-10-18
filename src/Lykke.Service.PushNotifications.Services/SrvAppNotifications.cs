@@ -223,7 +223,7 @@ namespace Lykke.Service.PushNotifications.Services
                 {
                     NotificationOutcome outcome;
 
-                    _log.Info($"Sending notification to {string.Join(", ", notificationIds)}", context: payload.ToJson());
+                    _log.Info($"Sending notification to {device.ToString()} {string.Join(", ", notificationIds)}", context: payload.ToJson());
 
                     if (device == MobileOs.Ios)
                         outcome = await _notificationHubClient.SendAppleNativeNotificationAsync(payload, notificationIds);
