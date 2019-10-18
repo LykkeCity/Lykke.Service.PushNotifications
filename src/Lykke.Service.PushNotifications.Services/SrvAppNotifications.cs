@@ -223,14 +223,12 @@ namespace Lykke.Service.PushNotifications.Services
                 {
                     NotificationOutcome outcome;
 
-                    _log.Info("Sending notification", context: payload.ToJson());
+                    _log.Info($"Sending notification to {string.Join(", ", notificationIds)}", context: payload.ToJson());
 
                     if (device == MobileOs.Ios)
                         outcome = await _notificationHubClient.SendAppleNativeNotificationAsync(payload, notificationIds);
                     else
                         outcome = await _notificationHubClient.SendFcmNativeNotificationAsync(payload, notificationIds);
-
-                    _log.Info("Outcome", context: outcome.ToJson());
 
 #pragma warning disable 4014
                     // will only work from Standard tier for azure notification hub
