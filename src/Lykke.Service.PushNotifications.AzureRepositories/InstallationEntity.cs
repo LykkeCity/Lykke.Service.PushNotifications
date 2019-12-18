@@ -9,6 +9,7 @@ namespace Lykke.Service.PushNotifications.AzureRepositories
 {
     public class InstallationEntity : AzureTableEntity, IInstallation
     {
+        public string ClientId { get; set; }
         public string NotificationId { get; set; }
         public string InstallationId { get; set; }
         public MobileOs Platform { get; set; }
@@ -18,12 +19,17 @@ namespace Lykke.Service.PushNotifications.AzureRepositories
 
         public string PushChannel { get; set; }
 
+        public static string GeneratePk(string clientId) => clientId;
+        public static string GenerateRk(string installationId) => installationId;
+
+
         public static InstallationEntity Create(IInstallation installation)
         {
             return new InstallationEntity
             {
-                PartitionKey = installation.NotificationId,
-                RowKey = installation.InstallationId,
+                PartitionKey = GeneratePk(installation.ClientId),
+                RowKey = GenerateRk(installation.InstallationId),
+                ClientId = installation.ClientId,
                 NotificationId = installation.NotificationId,
                 InstallationId = installation.InstallationId,
                 PushChannel = installation.PushChannel,
