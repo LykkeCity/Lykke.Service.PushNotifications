@@ -6,8 +6,9 @@ namespace Lykke.Service.PushNotifications.Core.Domain
     public interface IInstallationsRepository
     {
         Task AddOrUpdateAsync(IInstallation installation);
-        Task<IEnumerable<IInstallation>> GetByNotificationIdAsync(string notificationId);
-        Task<IInstallation> GetAsync(string notificationId, string installationId);
-        Task DeleteAsync(string notificationId, string installationId);
+        Task<IEnumerable<IInstallation>> GetByClientIdAsync(string clientId);
+        Task<IInstallation> GetAsync(string clientId, string installationId);
+        Task DisableAsync(string clientId, string installationId);
+        Task DeleteAsync(string clientId, string installationId);
     }
 }
