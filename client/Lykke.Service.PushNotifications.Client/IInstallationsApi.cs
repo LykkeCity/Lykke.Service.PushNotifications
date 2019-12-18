@@ -8,19 +8,19 @@ namespace Lykke.Service.PushNotifications.Client
 {
     public interface IInstallationsApi
     {
-        [Post("/api/Installations/register")]
+        [Post("/api/Installations")]
         Task RegisterAsync([Body] InstallationModel model);
 
-        [Post("/api/Installations/remove")]
+        [Delete("/api/Installations")]
         Task RemoveAsync([Body] InstallationRemoveModel model);
 
-        [Get("/api/Installations/{notificationId}")]
-        Task<IReadOnlyList<DeviceInstallation>> GetByNotificationIdAsync(string notificationId);
+        [Get("/api/Installations/{clientId}")]
+        Task<IReadOnlyList<DeviceInstallation>> GetByClientIdAsync(string clientId);
 
-        [Post("/api/Installations/tags/add")]
+        [Post("/api/Installations/tags")]
         Task AddTagsAsync([Body] TagsUpdateModel model);
 
-        [Post("/api/Installations/tags/remove")]
+        [Delete("/api/Installations/tags")]
         Task RemoveTagsAsync([Body] TagsUpdateModel model);
     }
 }

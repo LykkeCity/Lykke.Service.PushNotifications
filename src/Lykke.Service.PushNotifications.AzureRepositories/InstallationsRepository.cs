@@ -20,19 +20,30 @@ namespace Lykke.Service.PushNotifications.AzureRepositories
             return _tableStorage.InsertOrReplaceAsync(entity);
         }
 
-        public async Task<IEnumerable<IInstallation>> GetByNotificationIdAsync(string notificationId)
+        public async Task<IEnumerable<IInstallation>> GetByClientIdAsync(string clientId)
         {
-            return await _tableStorage.GetDataAsync(notificationId);
+            return await _tableStorage.GetDataAsync(InstallationEntity.GeneratePk(clientId));
         }
 
-        public async Task<IInstallation> GetAsync(string notificationId, string installationId)
+        public async Task<IInstallation> GetAsync(string clientId, string installationId)
         {
-            return await _tableStorage.GetDataAsync(notificationId, installationId);
+            return await _tableStorage.GetDataAsync(InstallationEntity.GeneratePk(clientId), InstallationEntity.GenerateRk(installationId));
         }
 
-        public Task DeleteAsync(string notificationId, string installationId)
+        public Task DisableAsync(string clientId, string installationId)
         {
-            return _tableStorage.DeleteIfExistAsync(notificationId, installationId);
+            return _tableStorage.MergeAsync(InstallationEntity.GeneratePk(clientId),
+                InstallationEntity.GenerateRk(installationId),
+                entity =>
+                {
+                    entity.Enabled = false;
+                    return entity;
+                });
+        }
+
+        public Task DeleteAsync(string clientId, string installationId)
+        {
+            return _tableStorage.DeleteIfExistAsync(InstallationEntity.GeneratePk(clientId), InstallationEntity.GenerateRk(installationId));
         }
     }
 }

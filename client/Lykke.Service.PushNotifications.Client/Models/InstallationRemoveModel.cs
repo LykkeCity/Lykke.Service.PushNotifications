@@ -5,7 +5,7 @@ namespace Lykke.Service.PushNotifications.Client.Models
     public class InstallationRemoveModel
     {
         [Required]
-        public string NotificationId { get; set; }
+        public string ClientId { get; set; }
         [Required]
         public string InstallationId { get; set; }
     }
