@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Common.Log;
@@ -38,24 +37,24 @@ namespace Lykke.Service.PushNotifications.Controllers
             _log = logFactory.CreateLog(this);
         }
 
-        [HttpPost("register")]
+        [HttpPost]
         [SwaggerOperation("Register")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task RegisterAsync([FromBody] InstallationModel installationModel)
+        public async Task RegisterAsync([FromBody] InstallationModel model)
         {
-            string[] tags = new HashSet<string>(installationModel.Tags)
+            string[] tags = new HashSet<string>(model.Tags)
             {
-                installationModel.NotificationId,
-                installationModel.Platform.ToString()
+                model.NotificationId,
+                model.Platform.ToString()
             }.ToArray();
 
             Installation installation = new Installation
             {
-                InstallationId = Convert.ToBase64String(Encoding.UTF8.GetBytes(installationModel.PushChannel)).TrimEnd('='),
-                PushChannel = installationModel.PushChannel,
+                InstallationId = Guid.NewGuid().ToString(),
+                PushChannel = GetPushChannel(model.Platform, model.PushChannel),
                 Tags = tags,
-                Platform = installationModel.Platform == MobileOs.Ios
+                Platform = model.Platform == MobileOs.Ios
                     ? NotificationPlatform.Apns
                     : NotificationPlatform.Fcm
             };
@@ -65,10 +64,11 @@ namespace Lykke.Service.PushNotifications.Controllers
                 await _notificationHubClient.CreateOrUpdateInstallationAsync(installation);
                 await _installationsRepository.AddOrUpdateAsync(new InstallationItem
                 {
-                    NotificationId = installationModel.NotificationId,
+                    ClientId = model.ClientId,
+                    NotificationId = model.NotificationId,
                     InstallationId = installation.InstallationId,
                     PushChannel = installation.PushChannel,
-                    Platform = installationModel.Platform,
+                    Platform = model.Platform,
                     Tags = tags
                 });
             }
@@ -79,27 +79,27 @@ namespace Lykke.Service.PushNotifications.Controllers
             }
         }
 
-        [HttpPost("remove")]
+        [HttpDelete]
         [SwaggerOperation("RemoveInstallation")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         public async Task RemoveAsync([FromBody] InstallationRemoveModel model)
         {
             await _notificationHubClient.DeleteInstallationAsync(model.InstallationId);
-            await _installationsRepository.DeleteAsync(model.NotificationId, model.InstallationId);
+            await _installationsRepository.DeleteAsync(model.ClientId, model.InstallationId);
         }
 
-        [HttpGet("{notificationId}")]
+        [HttpGet("{clientId}")]
         [SwaggerOperation("GetInstallations")]
         [ProducesResponseType(typeof(IReadOnlyList<DeviceInstallation>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IReadOnlyList<DeviceInstallation>> GetByNotificationIdAsync(string notificationId)
+        public async Task<IReadOnlyList<DeviceInstallation>> GetByClientIdAsync(string clientId)
         {
-            var installations = await _installationsRepository.GetByNotificationIdAsync(notificationId);
+            var installations = await _installationsRepository.GetByClientIdAsync(clientId);
             return Mapper.Map<IReadOnlyList<DeviceInstallation>>(installations);
         }
 
-        [HttpPost("tags/add")]
+        [HttpPost("tags")]
         [SwaggerOperation("AddTags")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
@@ -123,6 +123,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             await _notificationHubClient.CreateOrUpdateInstallationAsync(installation);
             await _installationsRepository.AddOrUpdateAsync(new InstallationItem
             {
+                ClientId = tagsModel.ClientId,
                 NotificationId = tagsModel.NotificationId,
                 InstallationId = tagsModel.InstallationId,
                 PushChannel = installation.PushChannel,
@@ -133,7 +134,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             });
         }
 
-        [HttpPost("tags/remove")]
+        [HttpDelete("tags")]
         [SwaggerOperation("RemoveTags")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
@@ -152,21 +153,38 @@ namespace Lykke.Service.PushNotifications.Controllers
                 tags.Remove(tag);
             }
 
+            var platform = installation.Platform == NotificationPlatform.Fcm
+                ? MobileOs.Android
+                : MobileOs.Ios;
+
             tags.Add(tagsModel.NotificationId);
+            tags.Add(platform.ToString());
 
             installation.Tags = tags.ToArray();
 
             await _notificationHubClient.CreateOrUpdateInstallationAsync(installation);
             await _installationsRepository.AddOrUpdateAsync(new InstallationItem
             {
+                ClientId = tagsModel.ClientId,
                 NotificationId = tagsModel.NotificationId,
                 InstallationId = tagsModel.InstallationId,
                 PushChannel = installation.PushChannel,
-                Platform = installation.Platform == NotificationPlatform.Fcm
-                    ? MobileOs.Android
-                    : MobileOs.Ios,
+                Platform = platform,
                 Tags = tags.ToArray()
             });
+        }
+
+        private string GetPushChannel(MobileOs platform, string pushChannel)
+        {
+            switch (platform)
+            {
+                case MobileOs.Ios:
+                    return pushChannel.Trim('<', '>').Replace(" ", "").ToUpperInvariant();
+                case MobileOs.Android:
+                    return pushChannel;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+            }
         }
     }
 }
