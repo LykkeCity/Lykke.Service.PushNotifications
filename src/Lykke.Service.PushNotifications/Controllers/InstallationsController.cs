@@ -43,7 +43,17 @@ namespace Lykke.Service.PushNotifications.Controllers
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         public async Task RegisterAsync([FromBody] InstallationModel model)
         {
-            string[] tags = new HashSet<string>(model.Tags)
+            var installationItem = (await _installationsRepository.GetByClientIdAsync(model.ClientId))
+                .FirstOrDefault(x => x.PushChannel == model.PushChannel);
+
+            var allTags = new List<string>(model.Tags);
+
+            if (installationItem != null)
+            {
+                allTags.AddRange(installationItem.Tags);
+            }
+
+            string[] tags = new HashSet<string>(allTags)
             {
                 model.NotificationId,
                 model.Platform.ToString()
@@ -51,7 +61,7 @@ namespace Lykke.Service.PushNotifications.Controllers
 
             Installation installation = new Installation
             {
-                InstallationId = Guid.NewGuid().ToString(),
+                InstallationId = installationItem?.InstallationId ?? Guid.NewGuid().ToString(),
                 PushChannel = GetPushChannel(model.Platform, model.PushChannel),
                 Tags = tags,
                 Platform = model.Platform == MobileOs.Ios
@@ -69,7 +79,8 @@ namespace Lykke.Service.PushNotifications.Controllers
                     InstallationId = installation.InstallationId,
                     PushChannel = installation.PushChannel,
                     Platform = model.Platform,
-                    Tags = tags
+                    Tags = tags,
+                    Enabled = true
                 });
             }
             catch (Exception ex)
@@ -86,7 +97,7 @@ namespace Lykke.Service.PushNotifications.Controllers
         public async Task RemoveAsync([FromBody] InstallationRemoveModel model)
         {
             await _notificationHubClient.DeleteInstallationAsync(model.InstallationId);
-            await _installationsRepository.DeleteAsync(model.ClientId, model.InstallationId);
+            await _installationsRepository.DisableAsync(model.ClientId, model.InstallationId);
         }
 
         [HttpGet("{clientId}")]

@@ -30,6 +30,17 @@ namespace Lykke.Service.PushNotifications.AzureRepositories
             return await _tableStorage.GetDataAsync(InstallationEntity.GeneratePk(clientId), InstallationEntity.GenerateRk(installationId));
         }
 
+        public Task DisableAsync(string clientId, string installationId)
+        {
+            return _tableStorage.MergeAsync(InstallationEntity.GeneratePk(clientId),
+                InstallationEntity.GenerateRk(installationId),
+                entity =>
+                {
+                    entity.Enabled = false;
+                    return entity;
+                });
+        }
+
         public Task DeleteAsync(string clientId, string installationId)
         {
             return _tableStorage.DeleteIfExistAsync(InstallationEntity.GeneratePk(clientId), InstallationEntity.GenerateRk(installationId));
