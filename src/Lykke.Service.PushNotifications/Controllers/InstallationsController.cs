@@ -44,7 +44,7 @@ namespace Lykke.Service.PushNotifications.Controllers
         public async Task RegisterAsync([FromBody] InstallationModel model)
         {
             var installationItem = (await _installationsRepository.GetByClientIdAsync(model.ClientId))
-                .FirstOrDefault(x => x.PushChannel == model.PushChannel);
+                .FirstOrDefault(x => x.PushChannel.Equals(model.PushChannel, StringComparison.InvariantCultureIgnoreCase));
 
             var allTags = new List<string>(model.Tags);
 
