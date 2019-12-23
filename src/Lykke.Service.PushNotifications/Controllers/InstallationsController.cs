@@ -13,6 +13,7 @@ using Lykke.Service.PushNotifications.Client.Models;
 using Lykke.Service.PushNotifications.Contract;
 using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Domain;
+using Lykke.Service.PushNotifications.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.NotificationHubs;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,16 +23,19 @@ namespace Lykke.Service.PushNotifications.Controllers
     [Route("api/Installations")]
     public class InstallationsController : Controller, IInstallationsApi
     {
+        private readonly IInstallationsService _installationsService;
         private readonly NotificationHubClient _notificationHubClient;
         private readonly IInstallationsRepository _installationsRepository;
         private readonly ILog _log;
 
         public InstallationsController(
+            IInstallationsService installationsService,
             NotificationHubClient notificationHubClient,
             IInstallationsRepository installationsRepository,
             ILogFactory logFactory
         )
         {
+            _installationsService = installationsService;
             _notificationHubClient = notificationHubClient;
             _installationsRepository = installationsRepository;
             _log = logFactory.CreateLog(this);
@@ -43,45 +47,10 @@ namespace Lykke.Service.PushNotifications.Controllers
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         public async Task RegisterAsync([FromBody] InstallationModel model)
         {
-            var installationItem = (await _installationsRepository.GetByClientIdAsync(model.ClientId))
-                .FirstOrDefault(x => x.PushChannel.Equals(model.PushChannel, StringComparison.InvariantCultureIgnoreCase));
-
-            var allTags = new List<string>(model.Tags);
-
-            if (installationItem != null)
-            {
-                allTags.AddRange(installationItem.Tags);
-            }
-
-            string[] tags = new HashSet<string>(allTags)
-            {
-                model.NotificationId,
-                model.Platform.ToString()
-            }.ToArray();
-
-            Installation installation = new Installation
-            {
-                InstallationId = installationItem?.InstallationId ?? Guid.NewGuid().ToString(),
-                PushChannel = GetPushChannel(model.Platform, model.PushChannel),
-                Tags = tags,
-                Platform = model.Platform == MobileOs.Ios
-                    ? NotificationPlatform.Apns
-                    : NotificationPlatform.Fcm
-            };
-
             try
             {
-                await _notificationHubClient.CreateOrUpdateInstallationAsync(installation);
-                await _installationsRepository.AddOrUpdateAsync(new InstallationItem
-                {
-                    ClientId = model.ClientId,
-                    NotificationId = model.NotificationId,
-                    InstallationId = installation.InstallationId,
-                    PushChannel = installation.PushChannel,
-                    Platform = model.Platform,
-                    Tags = tags,
-                    Enabled = true
-                });
+                await _installationsService.RegisterAsync(model.ClientId, model.NotificationId, model.Platform,
+                    model.PushChannel, model.Tags);
             }
             catch (Exception ex)
             {
@@ -96,8 +65,17 @@ namespace Lykke.Service.PushNotifications.Controllers
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         public async Task RemoveAsync([FromBody] InstallationRemoveModel model)
         {
-            await _notificationHubClient.DeleteInstallationAsync(model.InstallationId);
-            await _installationsRepository.DisableAsync(model.ClientId, model.InstallationId);
+            var installation = await _installationsRepository.GetAsync(model.ClientId, model.InstallationId);
+
+            var registrationsRemoveTask = installation != null
+                ? _notificationHubClient.DeleteRegistrationsByChannelAsync(installation.PushChannel)
+                : Task.CompletedTask;
+
+            await Task.WhenAll(
+                _notificationHubClient.DeleteInstallationAsync(model.InstallationId),
+                _installationsRepository.DisableAsync(model.ClientId, model.InstallationId),
+                registrationsRemoveTask
+                );
         }
 
         [HttpGet("{clientId}")]
@@ -185,17 +163,6 @@ namespace Lykke.Service.PushNotifications.Controllers
             });
         }
 
-        private string GetPushChannel(MobileOs platform, string pushChannel)
-        {
-            switch (platform)
-            {
-                case MobileOs.Ios:
-                    return pushChannel.Trim('<', '>').Replace(" ", "").ToUpperInvariant();
-                case MobileOs.Android:
-                    return pushChannel;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
-            }
-        }
+
     }
 }
