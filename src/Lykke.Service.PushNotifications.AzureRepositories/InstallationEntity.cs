@@ -18,14 +18,10 @@ namespace Lykke.Service.PushNotifications.AzureRepositories
         public DateTime LastUpdated { get; set; }
         [ValueSerializer(typeof(JsonStorageValueSerializer))]
         public string[] Tags { get; set; }
-
-        public bool Enabled { get; set; }
-
         public string PushChannel { get; set; }
 
         public static string GeneratePk(string clientId) => clientId;
         public static string GenerateRk(string installationId) => installationId;
-
 
         public static InstallationEntity Create(IInstallation installation)
         {
@@ -39,8 +35,7 @@ namespace Lykke.Service.PushNotifications.AzureRepositories
                 PushChannel = installation.PushChannel,
                 Platform = installation.Platform,
                 Tags = installation.Tags,
-                LastUpdated = DateTime.UtcNow,
-                Enabled = installation.Enabled
+                LastUpdated = DateTime.UtcNow
             };
         }
     }

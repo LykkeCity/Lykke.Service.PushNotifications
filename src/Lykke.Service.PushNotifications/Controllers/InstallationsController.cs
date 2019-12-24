@@ -16,6 +16,7 @@ using Lykke.Service.PushNotifications.Core.Domain;
 using Lykke.Service.PushNotifications.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.NotificationHubs.Messaging;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Lykke.Service.PushNotifications.Controllers
@@ -43,14 +44,15 @@ namespace Lykke.Service.PushNotifications.Controllers
 
         [HttpPost]
         [SwaggerOperation("Register")]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(InstallationResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task RegisterAsync([FromBody] InstallationModel model)
+        public async Task<InstallationResponse> RegisterAsync([FromBody] InstallationModel model)
         {
             try
             {
-                await _installationsService.RegisterAsync(model.ClientId, model.NotificationId, model.Platform,
-                    model.PushChannel, model.Tags);
+                string installationId = await _installationsService.RegisterAsync(model.ClientId, model.InstallationId, model.NotificationId, model.Platform,
+                    model.PushChannel);
+                return new InstallationResponse { InstallationId = installationId };
             }
             catch (Exception ex)
             {
@@ -71,11 +73,17 @@ namespace Lykke.Service.PushNotifications.Controllers
                 ? _notificationHubClient.DeleteRegistrationsByChannelAsync(installation.PushChannel)
                 : Task.CompletedTask;
 
-            await Task.WhenAll(
-                _notificationHubClient.DeleteInstallationAsync(model.InstallationId),
-                _installationsRepository.DisableAsync(model.ClientId, model.InstallationId),
-                registrationsRemoveTask
+            try
+            {
+                await Task.WhenAll(
+                    _notificationHubClient.DeleteInstallationAsync(model.InstallationId),
+                    _installationsRepository.DeleteAsync(model.ClientId, model.InstallationId),
+                    registrationsRemoveTask
                 );
+            }
+            catch (MessagingEntityNotFoundException)
+            {
+            }
         }
 
         [HttpGet("{clientId}")]
@@ -162,7 +170,5 @@ namespace Lykke.Service.PushNotifications.Controllers
                 Tags = tags.ToArray()
             });
         }
-
-
     }
 }
