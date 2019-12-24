@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using AzureStorage.Tables;
-using AzureStorage.Tables.Templates.Index;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
 using Lykke.Sdk;
@@ -40,9 +39,6 @@ namespace Lykke.Service.PushNotifications.Modules
             builder.Register(ctx =>
                 new InstallationsRepository(
                     AzureTableStorage<InstallationEntity>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
-                        "Installations", ctx.Resolve<ILogFactory>()),
-                    AzureTableStorage<AzureIndex>.Create(
-                        _dbSettings.ConnectionString(x => x.DataConnString),
                         "Installations", ctx.Resolve<ILogFactory>())
                     )
             ).As<IInstallationsRepository>().SingleInstance();
