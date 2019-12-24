@@ -12,6 +12,5 @@ namespace Lykke.Service.PushNotifications.Contract
         public string PushChannel { get; set; }
         public DateTime LastUpdated { get; set; }
         public string[] Tags { get; set; }
-        public bool Enabled { get; set; }
     }
 }

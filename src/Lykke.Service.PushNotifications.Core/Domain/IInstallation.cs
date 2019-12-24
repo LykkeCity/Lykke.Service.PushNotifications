@@ -12,6 +12,5 @@ namespace Lykke.Service.PushNotifications.Core.Domain
         string PushChannel { get; }
         DateTime LastUpdated { get; }
         string[] Tags { get; }
-        bool Enabled { get; }
     }
 }

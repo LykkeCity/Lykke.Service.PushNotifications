@@ -9,7 +9,7 @@ namespace Lykke.Service.PushNotifications.Client
     public interface IInstallationsApi
     {
         [Post("/api/Installations")]
-        Task RegisterAsync([Body] InstallationModel model);
+        Task<InstallationResponse> RegisterAsync([Body] InstallationModel model);
 
         [Delete("/api/Installations")]
         Task RemoveAsync([Body] InstallationRemoveModel model);
