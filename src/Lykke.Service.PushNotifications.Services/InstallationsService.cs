@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Domain;
@@ -24,19 +23,14 @@ namespace Lykke.Service.PushNotifications.Services
             _installationsRepository = installationsRepository;
         }
 
-        public async Task RegisterAsync(string clientId, string notificationId, MobileOs platform, string pushChannel, string[] tagsList)
+        public async Task<string> RegisterAsync(string clientId, string installationId, string notificationId, MobileOs platform, string pushChannel)
         {
-            var installationItem = (await _installationsRepository.GetByClientIdAsync(clientId))
-                .FirstOrDefault(x => x.PushChannel.Equals(pushChannel, StringComparison.InvariantCultureIgnoreCase));
+            var installationItem = !string.IsNullOrEmpty(installationId)
+                ? await _installationsRepository.GetAsync(clientId, installationId)
+                : (await _installationsRepository.GetByClientIdAsync(clientId))
+                    .FirstOrDefault(x => x.PushChannel.Equals(pushChannel, StringComparison.InvariantCultureIgnoreCase));
 
-            var allTags = new List<string>(tagsList);
-
-            if (installationItem != null)
-            {
-                allTags.AddRange(installationItem.Tags);
-            }
-
-            string[] tags = new HashSet<string>(allTags)
+            string[] tags = new HashSet<string>(installationItem?.Tags ?? Array.Empty<string>())
             {
                 notificationId,
                 platform.ToString()
@@ -44,7 +38,7 @@ namespace Lykke.Service.PushNotifications.Services
 
             Installation installation = new Installation
             {
-                InstallationId = installationItem?.InstallationId ?? Guid.NewGuid().ToString(),
+                InstallationId = installationId ?? installationItem?.InstallationId ?? Guid.NewGuid().ToString(),
                 PushChannel = GetPushChannel(platform, pushChannel),
                 Tags = tags,
                 Platform = platform == MobileOs.Ios
@@ -60,9 +54,10 @@ namespace Lykke.Service.PushNotifications.Services
                 InstallationId = installation.InstallationId,
                 PushChannel = installation.PushChannel,
                 Platform = platform,
-                Tags = tags,
-                Enabled = true
+                Tags = tags
             });
+
+            return installation.InstallationId;
         }
 
         private string GetPushChannel(MobileOs platform, string pushChannel)
