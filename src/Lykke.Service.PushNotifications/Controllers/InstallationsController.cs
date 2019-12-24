@@ -16,6 +16,7 @@ using Lykke.Service.PushNotifications.Core.Domain;
 using Lykke.Service.PushNotifications.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.NotificationHubs.Messaging;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Lykke.Service.PushNotifications.Controllers
@@ -72,11 +73,17 @@ namespace Lykke.Service.PushNotifications.Controllers
                 ? _notificationHubClient.DeleteRegistrationsByChannelAsync(installation.PushChannel)
                 : Task.CompletedTask;
 
-            await Task.WhenAll(
-                _notificationHubClient.DeleteInstallationAsync(model.InstallationId),
-                _installationsRepository.DeleteAsync(model.ClientId, model.InstallationId),
-                registrationsRemoveTask
+            try
+            {
+                await Task.WhenAll(
+                    _notificationHubClient.DeleteInstallationAsync(model.InstallationId),
+                    _installationsRepository.DeleteAsync(model.ClientId, model.InstallationId),
+                    registrationsRemoveTask
                 );
+            }
+            catch (MessagingEntityNotFoundException)
+            {
+            }
         }
 
         [HttpGet("{clientId}")]
