@@ -23,6 +23,7 @@
         OperationCreated,
         TradingSessionCreated,
         TierUpgraded,
-        DepositLimitPercentReached
+        DepositLimitPercentReached,
+        Wakeup
     }
 }

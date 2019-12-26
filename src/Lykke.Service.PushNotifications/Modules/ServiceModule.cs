@@ -39,12 +39,17 @@ namespace Lykke.Service.PushNotifications.Modules
             builder.Register(ctx =>
                 new InstallationsRepository(
                     AzureTableStorage<InstallationEntity>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
-                        "Installations", ctx.Resolve<ILogFactory>()))
+                        "Installations", ctx.Resolve<ILogFactory>())
+                    )
             ).As<IInstallationsRepository>().SingleInstance();
 
             builder.RegisterInstance(
                 NotificationHubClient.CreateClientFromConnectionString(_settings.HubConnectionString,_settings.HubName)
             );
+
+            builder.RegisterType<InstallationsService>()
+                .As<IInstallationsService>()
+                .SingleInstance();
         }
     }
 }

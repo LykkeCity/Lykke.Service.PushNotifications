@@ -5,6 +5,7 @@ namespace Lykke.Service.PushNotifications.Contract
 {
     public class DeviceInstallation
     {
+        public string ClientId { get; set; }
         public string NotificationId { get; set; }
         public string InstallationId { get; set; }
         public MobileOs Platform { get; set; }

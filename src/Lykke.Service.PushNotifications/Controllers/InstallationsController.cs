@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Common.Log;
@@ -14,8 +13,10 @@ using Lykke.Service.PushNotifications.Client.Models;
 using Lykke.Service.PushNotifications.Contract;
 using Lykke.Service.PushNotifications.Contract.Enums;
 using Lykke.Service.PushNotifications.Core.Domain;
+using Lykke.Service.PushNotifications.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.NotificationHubs.Messaging;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Lykke.Service.PushNotifications.Controllers
@@ -23,54 +24,35 @@ namespace Lykke.Service.PushNotifications.Controllers
     [Route("api/Installations")]
     public class InstallationsController : Controller, IInstallationsApi
     {
+        private readonly IInstallationsService _installationsService;
         private readonly NotificationHubClient _notificationHubClient;
         private readonly IInstallationsRepository _installationsRepository;
         private readonly ILog _log;
 
         public InstallationsController(
+            IInstallationsService installationsService,
             NotificationHubClient notificationHubClient,
             IInstallationsRepository installationsRepository,
             ILogFactory logFactory
         )
         {
+            _installationsService = installationsService;
             _notificationHubClient = notificationHubClient;
             _installationsRepository = installationsRepository;
             _log = logFactory.CreateLog(this);
         }
 
-        [HttpPost("register")]
+        [HttpPost]
         [SwaggerOperation("Register")]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(InstallationResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task RegisterAsync([FromBody] InstallationModel installationModel)
+        public async Task<InstallationResponse> RegisterAsync([FromBody] InstallationModel model)
         {
-            string[] tags = new HashSet<string>(installationModel.Tags)
-            {
-                installationModel.NotificationId,
-                installationModel.Platform.ToString()
-            }.ToArray();
-
-            Installation installation = new Installation
-            {
-                InstallationId = Convert.ToBase64String(Encoding.UTF8.GetBytes(installationModel.PushChannel)).TrimEnd('='),
-                PushChannel = installationModel.PushChannel,
-                Tags = tags,
-                Platform = installationModel.Platform == MobileOs.Ios
-                    ? NotificationPlatform.Apns
-                    : NotificationPlatform.Fcm
-            };
-
             try
             {
-                await _notificationHubClient.CreateOrUpdateInstallationAsync(installation);
-                await _installationsRepository.AddOrUpdateAsync(new InstallationItem
-                {
-                    NotificationId = installationModel.NotificationId,
-                    InstallationId = installation.InstallationId,
-                    PushChannel = installation.PushChannel,
-                    Platform = installationModel.Platform,
-                    Tags = tags
-                });
+                string installationId = await _installationsService.RegisterAsync(model.ClientId, model.InstallationId, model.NotificationId, model.Platform,
+                    model.PushChannel);
+                return new InstallationResponse { InstallationId = installationId };
             }
             catch (Exception ex)
             {
@@ -79,27 +61,42 @@ namespace Lykke.Service.PushNotifications.Controllers
             }
         }
 
-        [HttpPost("remove")]
+        [HttpDelete]
         [SwaggerOperation("RemoveInstallation")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         public async Task RemoveAsync([FromBody] InstallationRemoveModel model)
         {
-            await _notificationHubClient.DeleteInstallationAsync(model.InstallationId);
-            await _installationsRepository.DeleteAsync(model.NotificationId, model.InstallationId);
+            var installation = await _installationsRepository.GetAsync(model.ClientId, model.InstallationId);
+
+            var registrationsRemoveTask = installation != null
+                ? _notificationHubClient.DeleteRegistrationsByChannelAsync(installation.PushChannel)
+                : Task.CompletedTask;
+
+            try
+            {
+                await Task.WhenAll(
+                    _notificationHubClient.DeleteInstallationAsync(model.InstallationId),
+                    _installationsRepository.DeleteAsync(model.ClientId, model.InstallationId),
+                    registrationsRemoveTask
+                );
+            }
+            catch (MessagingEntityNotFoundException)
+            {
+            }
         }
 
-        [HttpGet("{notificationId}")]
+        [HttpGet("{clientId}")]
         [SwaggerOperation("GetInstallations")]
         [ProducesResponseType(typeof(IReadOnlyList<DeviceInstallation>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IReadOnlyList<DeviceInstallation>> GetByNotificationIdAsync(string notificationId)
+        public async Task<IReadOnlyList<DeviceInstallation>> GetByClientIdAsync(string clientId)
         {
-            var installations = await _installationsRepository.GetByNotificationIdAsync(notificationId);
+            var installations = await _installationsRepository.GetByClientIdAsync(clientId);
             return Mapper.Map<IReadOnlyList<DeviceInstallation>>(installations);
         }
 
-        [HttpPost("tags/add")]
+        [HttpPost("tags")]
         [SwaggerOperation("AddTags")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
@@ -123,6 +120,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             await _notificationHubClient.CreateOrUpdateInstallationAsync(installation);
             await _installationsRepository.AddOrUpdateAsync(new InstallationItem
             {
+                ClientId = tagsModel.ClientId,
                 NotificationId = tagsModel.NotificationId,
                 InstallationId = tagsModel.InstallationId,
                 PushChannel = installation.PushChannel,
@@ -133,7 +131,7 @@ namespace Lykke.Service.PushNotifications.Controllers
             });
         }
 
-        [HttpPost("tags/remove")]
+        [HttpDelete("tags")]
         [SwaggerOperation("RemoveTags")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
@@ -152,19 +150,23 @@ namespace Lykke.Service.PushNotifications.Controllers
                 tags.Remove(tag);
             }
 
+            var platform = installation.Platform == NotificationPlatform.Fcm
+                ? MobileOs.Android
+                : MobileOs.Ios;
+
             tags.Add(tagsModel.NotificationId);
+            tags.Add(platform.ToString());
 
             installation.Tags = tags.ToArray();
 
             await _notificationHubClient.CreateOrUpdateInstallationAsync(installation);
             await _installationsRepository.AddOrUpdateAsync(new InstallationItem
             {
+                ClientId = tagsModel.ClientId,
                 NotificationId = tagsModel.NotificationId,
                 InstallationId = tagsModel.InstallationId,
                 PushChannel = installation.PushChannel,
-                Platform = installation.Platform == NotificationPlatform.Fcm
-                    ? MobileOs.Android
-                    : MobileOs.Ios,
+                Platform = platform,
                 Tags = tags.ToArray()
             });
         }
