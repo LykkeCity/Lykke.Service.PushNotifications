@@ -25,7 +25,7 @@ namespace Lykke.Service.PushNotifications.Services
 
         public async Task<string> RegisterAsync(string clientId, string installationId, string notificationId, MobileOs platform, string pushChannel)
         {
-            var installationItem = !string.IsNullOrEmpty(installationId)
+            var installationItem = !string.IsNullOrEmpty(installationId?.Trim())
                 ? await _installationsRepository.GetAsync(clientId, installationId)
                 : (await _installationsRepository.GetByClientIdAsync(clientId))
                     .FirstOrDefault(x => x.PushChannel.Equals(pushChannel, StringComparison.InvariantCultureIgnoreCase));
@@ -38,7 +38,7 @@ namespace Lykke.Service.PushNotifications.Services
 
             Installation installation = new Installation
             {
-                InstallationId = installationId ?? installationItem?.InstallationId ?? Guid.NewGuid().ToString(),
+                InstallationId = installationItem?.InstallationId ?? Guid.NewGuid().ToString(),
                 PushChannel = GetPushChannel(platform, pushChannel),
                 Tags = tags,
                 Platform = platform == MobileOs.Ios
