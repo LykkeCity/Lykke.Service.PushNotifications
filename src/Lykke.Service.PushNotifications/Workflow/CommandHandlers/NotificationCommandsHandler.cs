@@ -164,5 +164,21 @@ namespace Lykke.Service.PushNotifications.Workflow.CommandHandlers
 
             return CommandHandlingResult.Ok();
         }
+
+        public async Task<CommandHandlingResult> Handle(WakeUpNotificationCommand command)
+        {
+            try
+            {
+                await _appNotifications.SendWakeupNotificationAsync(command.Tag, command.Message);
+            }
+            catch (Exception e)
+            {
+                _log.Error(e, context: command);
+
+                return CommandHandlingResult.Fail(_retrySeconds);
+            }
+
+            return CommandHandlingResult.Ok();
+        }
     }
 }

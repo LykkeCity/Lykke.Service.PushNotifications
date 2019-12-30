@@ -204,6 +204,34 @@ namespace Lykke.Service.PushNotifications.Services
             return SendRawNotificationAsync(MobileOs.Android, new[] { notificationId }, payload);
         }
 
+        public Task SendWakeupNotificationAsync(string tag, string message)
+        {
+            var apnsMessage = new IosNotification
+            {
+                Aps = new WakeUpFieldsIos
+                {
+                    Alert = message,
+                    Type = NotificationType.Wakeup,
+                    Tag = tag
+                }
+            };
+
+            var gcmMessage = new AndoridPayloadNotification
+            {
+                Data = new AndroidPayloadFields
+                {
+                    Entity = EventsAndEntities.GetEntity(NotificationType.Wakeup),
+                    Event = tag,
+                    Message = message,
+                }
+            };
+
+            return Task.WhenAll(
+                SendIosNotificationAsync(new []{tag}, apnsMessage),
+                SendAndroidNotificationAsync(new []{tag}, gcmMessage)
+            );
+        }
+
         private Task SendIosNotificationAsync(string[] notificationIds, IIosNotification notification)
         {
             return SendRawNotificationAsync(MobileOs.Ios, notificationIds, notification.ToJson(ignoreNulls: true));
