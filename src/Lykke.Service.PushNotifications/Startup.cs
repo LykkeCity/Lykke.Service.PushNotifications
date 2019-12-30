@@ -20,13 +20,6 @@ namespace Lykke.Service.PushNotifications
         [UsedImplicitly]
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            Mapper.Initialize(cfg =>
-            {
-                cfg.AddProfiles(typeof(ServiceProfile));
-            });
-
-            Mapper.AssertConfigurationIsValid();
-
             return services.BuildServiceProvider<AppSettings>(options =>
             {
                 options.SwaggerOptions = _swaggerOptions;

@@ -73,6 +73,8 @@ namespace Lykke.Service.PushNotifications.Core.Services
                     return "Session";
                 case NotificationType.LimitOrderEvent:
                     return LimitOrderEvent;
+                case NotificationType.Wakeup:
+                    return NotificationType.Wakeup.ToString();
                 default:
                     throw new ArgumentException("Unknown notification");
             }
@@ -145,5 +147,7 @@ namespace Lykke.Service.PushNotifications.Core.Services
         Task SendRawIosNotification(string notificationId, string payload);
 
         Task SendRawAndroidNotification(string notificationId, string payload);
+
+        Task SendWakeupNotificationAsync(string tag, string message);
     }
 }

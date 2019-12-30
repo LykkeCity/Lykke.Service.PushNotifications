@@ -27,18 +27,21 @@ namespace Lykke.Service.PushNotifications.Controllers
         private readonly IInstallationsService _installationsService;
         private readonly NotificationHubClient _notificationHubClient;
         private readonly IInstallationsRepository _installationsRepository;
+        private readonly IMapper _mapper;
         private readonly ILog _log;
 
         public InstallationsController(
             IInstallationsService installationsService,
             NotificationHubClient notificationHubClient,
             IInstallationsRepository installationsRepository,
+            IMapper mapper,
             ILogFactory logFactory
         )
         {
             _installationsService = installationsService;
             _notificationHubClient = notificationHubClient;
             _installationsRepository = installationsRepository;
+            _mapper = mapper;
             _log = logFactory.CreateLog(this);
         }
 
@@ -93,7 +96,7 @@ namespace Lykke.Service.PushNotifications.Controllers
         public async Task<IReadOnlyList<DeviceInstallation>> GetByClientIdAsync(string clientId)
         {
             var installations = await _installationsRepository.GetByClientIdAsync(clientId);
-            return Mapper.Map<IReadOnlyList<DeviceInstallation>>(installations);
+            return _mapper.Map<IReadOnlyList<DeviceInstallation>>(installations);
         }
 
         [HttpPost("tags")]
