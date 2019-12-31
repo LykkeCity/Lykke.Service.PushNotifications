@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Lykke.Service.PushNotifications.Client.Models;
 
 namespace Lykke.Service.PushNotifications.Client
 {
@@ -14,5 +15,10 @@ namespace Lykke.Service.PushNotifications.Client
         /// Api for installations
         /// </summary>
         IInstallationsApi Installations { get; }
+
+        /// <summary>
+        /// Api for tags
+        /// </summary>
+        ITagsApi Tags { get; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using AzureStorage.Tables;
+using AzureStorage.Tables.Templates.Index;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
 using Lykke.Sdk;
@@ -43,12 +44,32 @@ namespace Lykke.Service.PushNotifications.Modules
                     )
             ).As<IInstallationsRepository>().SingleInstance();
 
+            builder.Register(ctx =>
+                new TagsRepository(
+                    AzureTableStorage<TagEntity>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
+                        "InstallationTags", ctx.Resolve<ILogFactory>())
+                )
+            ).As<ITagsRepository>().SingleInstance();
+
+            builder.Register(ctx =>
+                new ClientTagsRepository(
+                    AzureTableStorage<ClientTagEntity>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
+                        "ClientTags", ctx.Resolve<ILogFactory>()),
+                    AzureTableStorage<AzureIndex>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
+                        "ClientTags", ctx.Resolve<ILogFactory>())
+                )
+            ).As<IClientTagsRepository>().SingleInstance();
+
             builder.RegisterInstance(
                 NotificationHubClient.CreateClientFromConnectionString(_settings.HubConnectionString,_settings.HubName)
             );
 
             builder.RegisterType<InstallationsService>()
                 .As<IInstallationsService>()
+                .SingleInstance();
+
+            builder.RegisterType<TagsService>()
+                .As<ITagsService>()
                 .SingleInstance();
         }
     }
