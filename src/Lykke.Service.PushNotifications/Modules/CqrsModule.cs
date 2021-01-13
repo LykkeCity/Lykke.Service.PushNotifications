@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Lykke.Cqrs;
 using Lykke.Cqrs.Configuration;
 using Lykke.Messaging;
@@ -31,7 +32,7 @@ namespace Lykke.Service.PushNotifications.Modules
         {
             string commandsRoute = "commands";
             Messaging.Serialization.MessagePackSerializerFactory.Defaults.FormatterResolver = MessagePack.Resolvers.ContractlessStandardResolver.Instance;
-            var rabbitMqClientSettings = new RabbitMQ.Client.ConnectionFactory { Uri = _settings.CurrentValue.SagasRabbitMq.RabbitConnectionString };
+            var rabbitMqClientSettings = new RabbitMQ.Client.ConnectionFactory { Uri = new Uri(_settings.CurrentValue.SagasRabbitMq.RabbitConnectionString) };
 
             builder.Register(context => new AutofacDependencyResolver(context)).As<IDependencyResolver>();
             builder.RegisterType<NotificationCommandsHandler>().SingleInstance();

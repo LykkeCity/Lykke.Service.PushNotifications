@@ -1,10 +1,10 @@
-﻿using System;
-using AutoMapper;
+﻿using Antares.Sdk;
+using Autofac;
 using JetBrains.Annotations;
-using Lykke.Sdk;
-using Lykke.Service.PushNotifications.Profiles;
 using Lykke.Service.PushNotifications.Settings;
+using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lykke.Service.PushNotifications
@@ -17,10 +17,14 @@ namespace Lykke.Service.PushNotifications
             ApiVersion = "v1"
         };
 
+        private IReloadingManagerWithConfiguration<AppSettings> _settings;
+        private LykkeServiceOptions<AppSettings> _lykkeOptions;
+
+
         [UsedImplicitly]
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            return services.BuildServiceProvider<AppSettings>(options =>
+            (_lykkeOptions, _settings) = services.ConfigureServices<AppSettings>(options =>
             {
                 options.SwaggerOptions = _swaggerOptions;
 
@@ -39,6 +43,16 @@ namespace Lykke.Service.PushNotifications
             {
                 options.SwaggerOptions = _swaggerOptions;
             });
+        }
+
+        [UsedImplicitly]
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            var configurationRoot = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build();
+
+            builder.ConfigureContainerBuilder(_lykkeOptions, configurationRoot, _settings);
         }
     }
 }

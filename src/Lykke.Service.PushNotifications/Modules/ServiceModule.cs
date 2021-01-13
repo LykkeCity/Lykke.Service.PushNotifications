@@ -1,9 +1,9 @@
-﻿using Autofac;
+﻿using Antares.Sdk.Services;
+using Autofac;
 using AzureStorage.Tables;
 using AzureStorage.Tables.Templates.Index;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
-using Lykke.Sdk;
 using Lykke.Service.PushNotifications.AzureRepositories;
 using Lykke.Service.PushNotifications.Core.Domain;
 using Lykke.Service.PushNotifications.Core.Services;
