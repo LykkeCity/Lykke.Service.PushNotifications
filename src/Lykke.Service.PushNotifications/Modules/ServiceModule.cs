@@ -71,6 +71,22 @@ namespace Lykke.Service.PushNotifications.Modules
             builder.RegisterType<TagsService>()
                 .As<ITagsService>()
                 .SingleInstance();
+
+            builder.Register(ctx =>
+                new FcmTokensRepository(
+                    AzureTableStorage<FcmTokenEntity>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
+                        "FcmTokens", ctx.Resolve<ILogFactory>()),
+                    AzureTableStorage<AzureIndex>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
+                        "FcmTokens", ctx.Resolve<ILogFactory>())
+                )
+            ).As<IFcmTokensRepository>().SingleInstance();
+
+            builder.RegisterType<FirebasePushService>()
+                .As<IFirebasePushService>()
+                .As<IStartable>()
+                .AutoActivate()
+                .WithParameter(TypedParameter.From(_settings.FirebasePrivateKeyJson))
+                .SingleInstance();
         }
     }
 }
