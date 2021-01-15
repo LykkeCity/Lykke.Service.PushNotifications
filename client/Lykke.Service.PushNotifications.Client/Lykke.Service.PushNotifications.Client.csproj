@@ -12,7 +12,8 @@
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/60782394</PackageIconUrl>
     <RepositoryUrl>https://github.com/swisschain/Antares.Service.PushNotifications.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>Swisschain</PackageTags>
+    <PackageTags>Antares;Swisschain</PackageTags>
+    <PackageId>Swisschain.Antares.Service.PushNotifications.Client</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
