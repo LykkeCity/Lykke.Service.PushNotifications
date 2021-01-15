@@ -23,7 +23,7 @@ namespace Lykke.Service.PushNotifications.Controllers
         [HttpPost]
         [SwaggerOperation("RegisterFcmToken")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        public Task RegisterAsync(FcmTokenModel model)
+        public Task RegisterAsync([FromBody] FcmTokenModel model)
         {
             return _fcmTokensRepository.AddAsync(model.NotificationId, model.ClientId, model.SessionId, model.FcmToken);
         }
