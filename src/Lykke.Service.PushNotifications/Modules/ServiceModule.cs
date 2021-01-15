@@ -7,6 +7,7 @@ using Lykke.Common.Log;
 using Lykke.Service.PushNotifications.AzureRepositories;
 using Lykke.Service.PushNotifications.Core.Domain;
 using Lykke.Service.PushNotifications.Core.Services;
+using Lykke.Service.PushNotifications.RabbitSubscribers;
 using Lykke.Service.PushNotifications.Services;
 using Lykke.Service.PushNotifications.Settings;
 using Lykke.Service.PushNotifications.Settings.ServiceSettings;
@@ -86,6 +87,13 @@ namespace Lykke.Service.PushNotifications.Modules
                 .As<IStartable>()
                 .AutoActivate()
                 .WithParameter(TypedParameter.From(_settings.FirebasePrivateKeyJson))
+                .SingleInstance();
+
+            builder.RegisterType<SessionsSubscriber>()
+                .As<IStartable>()
+                .AutoActivate()
+                .WithParameter("connectionString", _settings.RabbitMq.AntaresSessions.ConnectionString)
+                .WithParameter("exchangeName", _settings.RabbitMq.AntaresSessions.ExchangeName)
                 .SingleInstance();
         }
     }

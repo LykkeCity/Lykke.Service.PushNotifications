@@ -11,5 +11,7 @@ namespace Lykke.Service.PushNotifications.Settings.ServiceSettings
         public string HubName { get; set; }
         [Optional]
         public string FirebasePrivateKeyJson { get; set; }
+
+        public RabbitMqSettings RabbitMq { get; set; }
     }
 }
