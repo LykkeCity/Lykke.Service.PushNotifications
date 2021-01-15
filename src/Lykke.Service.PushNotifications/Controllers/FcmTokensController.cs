@@ -27,5 +27,13 @@ namespace Lykke.Service.PushNotifications.Controllers
         {
             return _fcmTokensRepository.AddAsync(model.NotificationId, model.ClientId, model.SessionId, model.FcmToken);
         }
+
+        [HttpDelete("{sessionId}")]
+        [SwaggerOperation("RemoveFcmTokensBySession")]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        public Task RemoveAsync(string sessionId)
+        {
+            return _fcmTokensRepository.DeleteBySessionIdAsync(sessionId);
+        }
     }
 }

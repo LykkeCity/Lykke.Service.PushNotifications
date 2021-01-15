@@ -8,5 +8,8 @@ namespace Lykke.Service.PushNotifications.Client
     {
         [Post("/api/fcmtokens")]
         Task RegisterAsync([Body] FcmTokenModel model);
+
+        [Delete("/api/fcmtokens/{sessionId}")]
+        Task RemoveAsync(string sessionId);
     }
 }
