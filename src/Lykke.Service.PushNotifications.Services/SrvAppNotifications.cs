@@ -19,13 +19,16 @@ namespace Lykke.Service.PushNotifications.Services
     public class SrvAppNotifications : IAppNotifications
     {
         private readonly NotificationHubClient _notificationHubClient;
+        private readonly IFirebasePushService _firebasePushService;
         private readonly ILog _log;
 
         public SrvAppNotifications(
             NotificationHubClient notificationHubClient,
+            IFirebasePushService firebasePushService,
             ILogFactory logFactory)
         {
             _notificationHubClient = notificationHubClient;
+            _firebasePushService = firebasePushService;
             _log = logFactory.CreateLog(this);
         }
 
@@ -84,7 +87,8 @@ namespace Lykke.Service.PushNotifications.Services
 
             return Task.WhenAll(
                 SendIosNotificationAsync(notificationIds, apnsMessage),
-                SendAndroidNotificationAsync(notificationIds, gcmMessage)
+                SendAndroidNotificationAsync(notificationIds, gcmMessage),
+                _firebasePushService.SendPushNotifications(notificationIds, null, message)
             );
         }
 
@@ -120,7 +124,8 @@ namespace Lykke.Service.PushNotifications.Services
 
             return Task.WhenAll(
                 SendIosNotificationAsync(notificationsIds, apnsMessage),
-                SendAndroidNotificationAsync(notificationsIds, gcmMessage)
+                SendAndroidNotificationAsync(notificationsIds, gcmMessage),
+                _firebasePushService.SendPushNotifications(notificationsIds, "Limit order", message)
             );
         }
 
@@ -156,7 +161,8 @@ namespace Lykke.Service.PushNotifications.Services
 
             return Task.WhenAll(
                 SendIosNotificationAsync(notificationIds, apnsMessage),
-                SendAndroidNotificationAsync(notificationIds, gcmMessage)
+                SendAndroidNotificationAsync(notificationIds, gcmMessage),
+                _firebasePushService.SendPushNotifications(notificationIds, null, message)
             );
         }
 
@@ -190,7 +196,8 @@ namespace Lykke.Service.PushNotifications.Services
 
             return Task.WhenAll(
                 SendIosNotificationAsync(notificationsIds, apnsMessage),
-                SendAndroidNotificationAsync(notificationsIds, gcmMessage)
+                SendAndroidNotificationAsync(notificationsIds, gcmMessage),
+                _firebasePushService.SendPushNotifications(notificationsIds, null, message)
             );
         }
 
@@ -306,7 +313,8 @@ namespace Lykke.Service.PushNotifications.Services
 
             return Task.WhenAll(
                 SendIosNotificationAsync(notificationsIds, apnsMessage),
-                SendAndroidNotificationAsync(notificationsIds, gcmMessage)
+                SendAndroidNotificationAsync(notificationsIds, gcmMessage),
+                _firebasePushService.SendPushNotifications(notificationsIds, null, message)
             );
         }
 

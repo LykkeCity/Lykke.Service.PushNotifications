@@ -20,5 +20,10 @@ namespace Lykke.Service.PushNotifications.Client
         /// Api for tags
         /// </summary>
         ITagsApi Tags { get; }
+
+        /// <summary>
+        /// Api for fcm tokens
+        /// </summary>
+        IFcmTokensApi FcmTokens { get; }
     }
 }

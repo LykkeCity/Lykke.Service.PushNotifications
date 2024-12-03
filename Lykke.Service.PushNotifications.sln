@@ -33,6 +33,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Contract", "5. Contract"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Service.PushNotifications.Contract", "client\Lykke.Service.PushNotifications.Contract\Lykke.Service.PushNotifications.Contract.csproj", "{EC5A0BC5-9C03-4CB9-9D11-36351A463C8C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github workflow", "Github workflow", "{7E99BF9E-2D3F-4A55-8FAF-2D9ADADFC843}"
+    ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci-dev.yml = .github\workflows\ci-dev.yml
+		.github\workflows\ci-test.yml = .github\workflows\ci-test.yml
+		.github\workflows\release-api-client.yml = .github\workflows\release-api-client.yml
+		.github\workflows\release-service.yml = .github\workflows\release-service.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +86,7 @@ Global
 		{3C300C31-97D3-41E8-A627-C53491BDA28B} = {C9A2CFDE-EA32-4946-B679-7CE6EFA816B8}
 		{A61FFDEE-5725-4650-A788-6E55EE5EFD5B} = {8F9036B1-5106-4C69-B2D2-B78EE52687A0}
 		{EC5A0BC5-9C03-4CB9-9D11-36351A463C8C} = {353437EE-CA08-4B25-ABA8-F7C1D85E8DE2}
+		{7E99BF9E-2D3F-4A55-8FAF-2D9ADADFC843} = {6CA74DE0-A357-4934-9D8B-FEA3F0A2D690}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2B3177C-BB22-47E5-9665-852D38159D8E}

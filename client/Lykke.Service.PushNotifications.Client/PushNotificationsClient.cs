@@ -8,12 +8,14 @@ namespace Lykke.Service.PushNotifications.Client
         public INotificationsApi Notifications { get; }
         public IInstallationsApi Installations { get; }
         public ITagsApi Tags { get; set; }
+        public IFcmTokensApi FcmTokens { get; set; }
 
         public PushNotificationsClient(IHttpClientGenerator httpClientGenerator)
         {
             Notifications = httpClientGenerator.Generate<INotificationsApi>();
             Installations = httpClientGenerator.Generate<IInstallationsApi>();
             Tags = httpClientGenerator.Generate<ITagsApi>();
+            FcmTokens = httpClientGenerator.Generate<IFcmTokensApi>();
         }
     }
 }

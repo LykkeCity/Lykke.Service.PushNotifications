@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Lykke.Service.PushNotifications.AzureRepositories</AssemblyName>
     <RootNamespace>Lykke.Service.PushNotifications.AzureRepositories</RootNamespace>
     <Version>1.0.0</Version>

@@ -1,12 +1,13 @@
-﻿using Autofac;
+﻿using Antares.Sdk.Services;
+using Autofac;
 using AzureStorage.Tables;
 using AzureStorage.Tables.Templates.Index;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
-using Lykke.Sdk;
 using Lykke.Service.PushNotifications.AzureRepositories;
 using Lykke.Service.PushNotifications.Core.Domain;
 using Lykke.Service.PushNotifications.Core.Services;
+using Lykke.Service.PushNotifications.RabbitSubscribers;
 using Lykke.Service.PushNotifications.Services;
 using Lykke.Service.PushNotifications.Settings;
 using Lykke.Service.PushNotifications.Settings.ServiceSettings;
@@ -70,6 +71,29 @@ namespace Lykke.Service.PushNotifications.Modules
 
             builder.RegisterType<TagsService>()
                 .As<ITagsService>()
+                .SingleInstance();
+
+            builder.Register(ctx =>
+                new FcmTokensRepository(
+                    AzureTableStorage<FcmTokenEntity>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
+                        "FcmTokens", ctx.Resolve<ILogFactory>()),
+                    AzureTableStorage<AzureIndex>.Create(_dbSettings.ConnectionString(x => x.DataConnString),
+                        "FcmTokens", ctx.Resolve<ILogFactory>())
+                )
+            ).As<IFcmTokensRepository>().SingleInstance();
+
+            builder.RegisterType<FirebasePushService>()
+                .As<IFirebasePushService>()
+                .As<IStartable>()
+                .AutoActivate()
+                .WithParameter(TypedParameter.From(_settings.FirebasePrivateKeyJson))
+                .SingleInstance();
+
+            builder.RegisterType<SessionsSubscriber>()
+                .As<IStartable>()
+                .AutoActivate()
+                .WithParameter("connectionString", _settings.RabbitMq.AntaresSessions.ConnectionString)
+                .WithParameter("exchangeName", _settings.RabbitMq.AntaresSessions.ExchangeName)
                 .SingleInstance();
         }
     }
